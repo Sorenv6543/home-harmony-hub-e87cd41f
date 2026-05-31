@@ -115,11 +115,9 @@ function DashboardPage() {
           </section>
 
           {/* Quick stats */}
-          <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard label="Today's bookings" value="4" delta="+12%" icon={CalendarCheck} />
-            <StatCard label="This week" value="48" delta="+8.4%" icon={Clock} />
-            <StatCard label="Pending" value="6" delta="-3%" deltaDirection="down" icon={AlertCircle} tone="warning" />
-            <StatCard label="Unassigned" value="1" icon={UserX} tone="danger" />
+          <section className="grid grid-cols-2 gap-4">
+            <StatCard label="Today's bookings" value="4" icon={CalendarCheck} />
+            <StatCard label="This week" value="48" icon={Clock} />
           </section>
 
           {/* Timeline */}
