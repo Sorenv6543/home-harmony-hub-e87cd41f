@@ -1,4 +1,4 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { useRouterState } from "@tanstack/react-router";
 import {
   LayoutGrid,
   CalendarPlus,
@@ -87,8 +87,8 @@ function NavGroup({
           const Icon = item.icon;
           return (
             <li key={item.to}>
-              <Link
-                to={item.to}
+              <a
+                href={item.to === "/" ? "/" : "#"}
                 className={`group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
                   active
                     ? "bg-primary/10 text-primary font-medium"
@@ -102,7 +102,7 @@ function NavGroup({
                     New
                   </span>
                 )}
-              </Link>
+              </a>
             </li>
           );
         })}
