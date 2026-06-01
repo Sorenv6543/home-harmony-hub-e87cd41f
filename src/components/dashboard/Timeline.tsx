@@ -199,12 +199,13 @@ export function Timeline({
 
 function Legend() {
   return (
-    <div className="flex flex-wrap items-center gap-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
       {(Object.keys(statusStyles) as Status[]).map((k) => (
         <div key={k} className="flex items-center gap-1.5">
           <span className={`h-2.5 w-2.5 rounded-full ${statusStyles[k].dot}`} />
           {statusStyles[k].label}
         </div>
+
       ))}
     </div>
   );
