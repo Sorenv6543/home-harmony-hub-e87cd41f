@@ -183,10 +183,7 @@ export function Timeline({
                           </span>
                         </button>
 
-                          <span className={`text-xs font-semibold whitespace-nowrap ${s.text}`}>
-                            {b.label ?? `${formatHour(b.startHour)} · ${s.label}`}
-                          </span>
-                        </button>
+
                       </div>
                     </div>
                   );
