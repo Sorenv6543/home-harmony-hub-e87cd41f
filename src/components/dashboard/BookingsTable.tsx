@@ -2,17 +2,17 @@ import type { Booking } from "./Timeline";
 import { MoreHorizontal } from "lucide-react";
 
 const statusPill: Record<Booking["status"], string> = {
-  confirmed: "bg-success-soft text-success",
-  pending: "bg-warning-soft text-warning",
-  completed: "bg-surface-muted text-muted-foreground",
-  unassigned: "bg-danger-soft text-danger",
+  "check-in": "bg-success-soft text-success",
+  "check-out": "bg-info-soft text-info",
+  turn: "bg-warning-soft text-warning",
+  urgent: "bg-danger-soft text-danger",
 };
 
 const statusLabel: Record<Booking["status"], string> = {
-  confirmed: "Confirmed",
-  pending: "Pending",
-  completed: "Completed",
-  unassigned: "Unassigned",
+  "check-in": "Check-in",
+  "check-out": "Check-out",
+  turn: "Turn",
+  urgent: "Urgent",
 };
 
 function initials(name: string) {
