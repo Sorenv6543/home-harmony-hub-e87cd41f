@@ -89,8 +89,7 @@ export function Timeline({
             <p className="text-xs text-muted-foreground">Next few days · tap a booking for details</p>
           </div>
         </div>
-        <div className="flex items-center gap-4">
-          <Legend />
+        <div className="flex items-center gap-3">
           <div className="flex rounded-lg border border-border bg-surface-muted p-0.5">
             {(["Day", "Week", "Month"] as const).map((z) => (
               <button
@@ -107,15 +106,16 @@ export function Timeline({
             ))}
           </div>
         </div>
+
       </div>
 
       <div className="px-5 pb-5 pt-4">
         {/* Hour ruler */}
-        <div className="relative ml-40 h-6 border-b border-border">
+        <div className="relative ml-44 h-6 border-b border-border">
           {HOURS.map((h) => (
             <div
               key={h}
-              className="absolute -translate-x-1/2 text-xs font-medium text-muted-foreground"
+              className="absolute -translate-x-1/2 text-sm font-semibold text-muted-foreground"
               style={{ left: `${pct(h)}%` }}
             >
               {formatRuler(h)}
@@ -126,26 +126,26 @@ export function Timeline({
         {/* Day groups */}
         <div className="mt-2">
           {grouped.map((group, gi) => (
-            <div key={group.day} className={gi > 0 ? "mt-4 border-t border-border pt-4" : ""}>
-              <p className="mb-3 text-[11px] font-bold tracking-[0.14em] text-muted-foreground">
+            <div key={group.day} className={gi > 0 ? "mt-5 border-t border-border pt-4" : "pt-1"}>
+              <p className="mb-3 text-xs font-bold tracking-[0.16em] text-foreground/70">
                 {dayLabels[group.day]}
               </p>
-              <div className="space-y-2.5">
+              <div className="space-y-3">
                 {group.items.map((b) => {
                   const s = statusStyles[b.status];
                   const selected = selectedId === b.id;
                   const isToday = b.day === "today";
                   return (
                     <div key={b.id} className="flex items-center gap-3">
-                      <div className="w-40 shrink-0 pr-2">
-                        <p className="text-sm font-semibold text-foreground truncate">
+                      <div className="w-44 shrink-0 pr-2">
+                        <p className="text-[15px] font-semibold leading-tight text-foreground truncate">
                           {b.address}
                         </p>
-                        <p className="text-xs text-muted-foreground truncate">
+                        <p className="mt-0.5 text-[13px] text-muted-foreground truncate">
                           {b.city ?? b.service}
                         </p>
                       </div>
-                      <div className="relative h-14 flex-1 rounded-lg bg-surface-muted/50">
+                      <div className="relative h-12 flex-1 rounded-lg bg-surface-muted/50">
                         {/* Grid lines */}
                         {HOURS.map((h) => (
                           <div
@@ -160,14 +160,14 @@ export function Timeline({
                             className="absolute top-0 bottom-0 z-10 w-px bg-foreground"
                             style={{ left: `${pct(NOW_HOUR)}%` }}
                           >
-                            <span className="absolute -top-1 left-1/2 -translate-x-1/2 rounded-md bg-foreground px-1.5 py-0.5 text-[10px] font-bold text-background">
+                            <span className="absolute -top-2 left-1/2 -translate-x-1/2 rounded-md bg-foreground px-1.5 py-0.5 text-[11px] font-bold text-background">
                               NOW
                             </span>
                           </div>
                         )}
                         <button
                           onClick={() => onSelect(b.id)}
-                          className={`absolute top-2 bottom-2 flex items-center gap-1.5 rounded-full border px-3 text-left transition-all ${s.bar} ${
+                          className={`absolute top-1.5 bottom-1.5 flex items-center gap-2 rounded-full border px-3.5 text-left transition-all ${s.bar} ${
                             selected
                               ? "ring-2 ring-primary ring-offset-2 ring-offset-surface"
                               : "hover:brightness-95"
@@ -177,11 +177,13 @@ export function Timeline({
                             minWidth: `${pct(b.endHour) - pct(b.startHour)}%`,
                           }}
                         >
-                          <span className={`h-2 w-2 shrink-0 rounded-full ${s.dot}`} />
-                          <span className={`text-xs font-semibold whitespace-nowrap ${s.text}`}>
+                          <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${s.dot}`} />
+                          <span className={`text-[13px] font-semibold whitespace-nowrap ${s.text}`}>
                             {b.label ?? `${formatHour(b.startHour)} · ${s.label}`}
                           </span>
                         </button>
+
+
                       </div>
                     </div>
                   );
@@ -195,14 +197,15 @@ export function Timeline({
   );
 }
 
-function Legend() {
+export function Legend() {
   return (
-    <div className="flex flex-wrap items-center gap-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
       {(Object.keys(statusStyles) as Status[]).map((k) => (
         <div key={k} className="flex items-center gap-1.5">
           <span className={`h-2.5 w-2.5 rounded-full ${statusStyles[k].dot}`} />
           {statusStyles[k].label}
         </div>
+
       ))}
     </div>
   );

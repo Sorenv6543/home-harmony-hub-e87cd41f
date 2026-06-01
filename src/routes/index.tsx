@@ -3,9 +3,10 @@ import { useState } from "react";
 import { Bell, Search, Plus, CalendarCheck, Clock } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { StatCard } from "@/components/dashboard/StatCard";
-import { Timeline, type Booking } from "@/components/dashboard/Timeline";
+import { Timeline, Legend, type Booking } from "@/components/dashboard/Timeline";
 import { BookingsTable } from "@/components/dashboard/BookingsTable";
 import { BookingDetail } from "@/components/dashboard/BookingDetail";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -119,7 +120,82 @@ const bookings: Booking[] = [
     status: "turn",
     label: "12:00 PM · Turn",
   },
+  {
+    id: "9",
+    customer: "Rivera Group",
+    address: "402 Maple St",
+    city: "Madison, WI",
+    service: "Check-in · 3 bd",
+    day: "thu",
+    startHour: 16,
+    endHour: 17.5,
+    status: "check-in",
+    cleaner: "Maria W.",
+    label: "4:00 PM · Check-in",
+  },
+  {
+    id: "10",
+    customer: "Bennett & Co.",
+    address: "88 Birch Ln",
+    city: "Portland, OR",
+    service: "Check-out · 2 bd",
+    day: "today",
+    startHour: 18,
+    endHour: 19.5,
+    status: "check-out",
+    label: "6:00 PM · Check-out",
+  },
+  {
+    id: "11",
+    customer: "Yamamoto Family",
+    address: "27 Harbor View",
+    city: "Seattle, WA",
+    service: "Turn · 3 bd",
+    day: "tomorrow",
+    startHour: 9,
+    endHour: 10.5,
+    status: "turn",
+    label: "9:00 AM · Turn",
+  },
+  {
+    id: "12",
+    customer: "Field Studios",
+    address: "14 Studio Ln",
+    city: "Brooklyn, NY",
+    service: "Urgent · 1 bd",
+    day: "tomorrow",
+    startHour: 13,
+    endHour: 14,
+    status: "urgent",
+    label: "1:00 PM · Urgent",
+  },
+  {
+    id: "13",
+    customer: "Patel Residence",
+    address: "9 Sunset Blvd",
+    city: "San Diego, CA",
+    service: "Check-in · 2 bd",
+    day: "wed",
+    startHour: 8,
+    endHour: 9.5,
+    status: "check-in",
+    cleaner: "Jordan S.",
+    label: "8:00 AM · Check-in",
+  },
+  {
+    id: "14",
+    customer: "Atlas Rentals",
+    address: "300 River Rd",
+    city: "Nashville, TN",
+    service: "Turn · 4 bd",
+    day: "wed",
+    startHour: 17,
+    endHour: 19,
+    status: "turn",
+    label: "5:00 PM · Turn",
+  },
 ];
+
 
 function DashboardPage() {
   const [selectedId, setSelectedId] = useState<string | undefined>("2");
@@ -163,21 +239,24 @@ function DashboardPage() {
         </header>
 
         <main className="flex-1 overflow-y-auto p-4 md:p-6 space-y-5">
-          {/* Welcome + stats on the same row */}
-          <section className="grid grid-cols-1 lg:grid-cols-[1fr_auto_auto] items-center gap-4 rounded-2xl border border-border bg-surface p-4 shadow-card">
-            <div>
-              <h2 className="text-xl font-semibold tracking-tight text-foreground">
+          {/* Welcome + color key + stats on a single compact row */}
+          <section className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 rounded-2xl border border-border bg-surface px-4 py-3 shadow-card">
+            <div className="min-w-0">
+              <h2 className="text-lg font-semibold tracking-tight text-foreground leading-tight">
                 Good morning, Elena
               </h2>
-              <p className="text-sm text-muted-foreground">
-                You have <span className="font-semibold text-foreground">4 bookings</span> today
-                {" · "}
-                <span className="font-semibold text-danger">1 urgent</span> needs attention.
+              <p className="text-sm text-muted-foreground leading-tight">
+                <span className="font-semibold text-foreground">4 bookings</span> today ·{" "}
+                <span className="font-semibold text-danger">1 urgent</span>
               </p>
             </div>
-            <StatCard label="Today" value="4" icon={CalendarCheck} />
-            <StatCard label="This week" value="48" icon={Clock} />
+            <Legend />
+            <div className="flex items-center gap-3">
+              <StatCard label="Today" value="4" icon={CalendarCheck} />
+              <StatCard label="Week" value="48" icon={Clock} />
+            </div>
           </section>
+
 
           {/* Timeline */}
           <Timeline bookings={bookings} onSelect={setSelectedId} selectedId={selectedId} />
