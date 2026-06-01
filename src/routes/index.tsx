@@ -3,9 +3,10 @@ import { useState } from "react";
 import { Bell, Search, Plus, CalendarCheck, Clock } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { StatCard } from "@/components/dashboard/StatCard";
-import { Timeline, type Booking } from "@/components/dashboard/Timeline";
+import { Timeline, Legend, type Booking } from "@/components/dashboard/Timeline";
 import { BookingsTable } from "@/components/dashboard/BookingsTable";
 import { BookingDetail } from "@/components/dashboard/BookingDetail";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
