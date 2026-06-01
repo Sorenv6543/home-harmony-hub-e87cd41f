@@ -1,43 +1,58 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
-type Status = "confirmed" | "pending" | "completed" | "unassigned";
+type Status = "check-in" | "check-out" | "turn" | "urgent";
 
 interface Booking {
   id: string;
   customer: string;
   address: string;
+  city?: string;
   service: string;
-  startHour: number; // 0-24
+  day: "today" | "tomorrow" | "wed" | "thu";
+  startHour: number;
   endHour: number;
   status: Status;
   cleaner?: string;
+  label?: string; // e.g. "3:00 PM · Check-in"
 }
 
-const HOURS = [8, 10, 12, 14, 16, 18];
+const HOURS = [8, 11, 14, 17, 20];
 const START = 8;
-const END = 19;
+const END = 20;
+const NOW_HOUR = 17; // 5pm for the NOW marker demo
 
-const statusStyles: Record<Status, { bar: string; dot: string; label: string }> = {
-  confirmed: {
-    bar: "bg-success-soft border-success/30 text-success",
+const statusStyles: Record<Status, { bar: string; dot: string; label: string; text: string }> = {
+  "check-in": {
+    bar: "bg-success-soft border-success/30",
     dot: "bg-success",
-    label: "Confirmed",
+    text: "text-success",
+    label: "Check-in",
   },
-  pending: {
-    bar: "bg-warning-soft border-warning/30 text-warning",
+  "check-out": {
+    bar: "bg-info-soft border-info/30",
+    dot: "bg-info",
+    text: "text-info",
+    label: "Check-out",
+  },
+  turn: {
+    bar: "bg-warning-soft border-warning/30",
     dot: "bg-warning",
-    label: "Pending",
+    text: "text-warning",
+    label: "Turn",
   },
-  completed: {
-    bar: "bg-surface-muted border-border text-muted-foreground",
-    dot: "bg-muted-foreground",
-    label: "Completed",
-  },
-  unassigned: {
-    bar: "bg-danger-soft border-danger/30 text-danger",
+  urgent: {
+    bar: "bg-danger-soft border-danger/30",
     dot: "bg-danger",
-    label: "Unassigned",
+    text: "text-danger",
+    label: "Urgent",
   },
+};
+
+const dayLabels: Record<Booking["day"], string> = {
+  today: "TODAY",
+  tomorrow: "TOMORROW",
+  wed: "WED",
+  thu: "THU",
 };
 
 export function Timeline({
@@ -49,16 +64,30 @@ export function Timeline({
   onSelect: (id: string) => void;
   selectedId?: string;
 }) {
-  const [zoom, setZoom] = useState<"Day" | "Week" | "Month">("Day");
+  const [zoom, setZoom] = useState<"Day" | "Week" | "Month">("Week");
 
   const pct = (h: number) => ((h - START) / (END - START)) * 100;
 
+  const grouped = useMemo(() => {
+    const list = zoom === "Day" ? bookings.filter((b) => b.day === "today") : bookings;
+    const order: Booking["day"][] = ["today", "tomorrow", "wed", "thu"];
+    return order
+      .map((d) => ({ day: d, items: list.filter((b) => b.day === d) }))
+      .filter((g) => g.items.length > 0);
+  }, [bookings, zoom]);
+
   return (
     <div className="rounded-2xl border border-border bg-surface shadow-card">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-6 py-4">
-        <div>
-          <h3 className="text-sm font-semibold text-foreground">Today's schedule</h3>
-          <p className="text-xs text-muted-foreground">Tap a booking for details</p>
+      {/* Header */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <CalendarIcon />
+          </div>
+          <div>
+            <h3 className="text-base font-semibold text-foreground">Schedule</h3>
+            <p className="text-xs text-muted-foreground">Next few days · tap a booking for details</p>
+          </div>
         </div>
         <div className="flex items-center gap-4">
           <Legend />
@@ -67,7 +96,7 @@ export function Timeline({
               <button
                 key={z}
                 onClick={() => setZoom(z)}
-                className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                className={`rounded-md px-3 py-1 text-xs font-semibold transition-colors ${
                   zoom === z
                     ? "bg-surface text-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
@@ -80,63 +109,86 @@ export function Timeline({
         </div>
       </div>
 
-      <div className="px-6 py-6">
+      <div className="px-5 pb-5 pt-4">
         {/* Hour ruler */}
-        <div className="relative ml-32 h-5 border-b border-border">
+        <div className="relative ml-40 h-6 border-b border-border">
           {HOURS.map((h) => (
             <div
               key={h}
-              className="absolute -translate-x-1/2 text-[10px] font-medium text-muted-foreground"
+              className="absolute -translate-x-1/2 text-xs font-medium text-muted-foreground"
               style={{ left: `${pct(h)}%` }}
             >
-              {h % 12 === 0 ? 12 : h % 12}
-              <span className="ml-0.5">{h < 12 ? "am" : "pm"}</span>
+              {formatRuler(h)}
             </div>
           ))}
         </div>
 
-        {/* Rows */}
-        <div className="mt-3 space-y-3">
-          {bookings.map((b) => {
-            const s = statusStyles[b.status];
-            const selected = selectedId === b.id;
-            return (
-              <div key={b.id} className="flex items-center gap-3">
-                <div className="w-32 shrink-0">
-                  <p className="text-xs font-medium text-foreground truncate">{b.address}</p>
-                  <p className="text-[11px] text-muted-foreground truncate">{b.service}</p>
-                </div>
-                <div className="relative h-11 flex-1 rounded-lg bg-surface-muted/60">
-                  {/* Grid lines */}
-                  {HOURS.map((h) => (
-                    <div
-                      key={h}
-                      className="absolute top-0 bottom-0 w-px bg-border/60"
-                      style={{ left: `${pct(h)}%` }}
-                    />
-                  ))}
-                  <button
-                    onClick={() => onSelect(b.id)}
-                    className={`absolute top-1 bottom-1 rounded-md border px-2 text-left transition-all ${s.bar} ${
-                      selected ? "ring-2 ring-primary ring-offset-2 ring-offset-surface" : "hover:brightness-95"
-                    }`}
-                    style={{
-                      left: `${pct(b.startHour)}%`,
-                      width: `${pct(b.endHour) - pct(b.startHour)}%`,
-                    }}
-                  >
-                    <p className="text-[11px] font-semibold leading-tight truncate">
-                      {b.customer}
-                    </p>
-                    <p className="text-[10px] opacity-80 truncate">
-                      {formatHour(b.startHour)}–{formatHour(b.endHour)}
-                      {b.cleaner ? ` · ${b.cleaner}` : ""}
-                    </p>
-                  </button>
-                </div>
+        {/* Day groups */}
+        <div className="mt-2">
+          {grouped.map((group, gi) => (
+            <div key={group.day} className={gi > 0 ? "mt-4 border-t border-border pt-4" : ""}>
+              <p className="mb-3 text-[11px] font-bold tracking-[0.14em] text-muted-foreground">
+                {dayLabels[group.day]}
+              </p>
+              <div className="space-y-2.5">
+                {group.items.map((b) => {
+                  const s = statusStyles[b.status];
+                  const selected = selectedId === b.id;
+                  const isToday = b.day === "today";
+                  return (
+                    <div key={b.id} className="flex items-center gap-3">
+                      <div className="w-40 shrink-0 pr-2">
+                        <p className="text-sm font-semibold text-foreground truncate">
+                          {b.address}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {b.city ?? b.service}
+                        </p>
+                      </div>
+                      <div className="relative h-14 flex-1 rounded-lg bg-surface-muted/50">
+                        {/* Grid lines */}
+                        {HOURS.map((h) => (
+                          <div
+                            key={h}
+                            className="absolute top-0 bottom-0 w-px bg-border/60"
+                            style={{ left: `${pct(h)}%` }}
+                          />
+                        ))}
+                        {/* NOW marker on today */}
+                        {isToday && NOW_HOUR >= START && NOW_HOUR <= END && (
+                          <div
+                            className="absolute top-0 bottom-0 z-10 w-px bg-foreground"
+                            style={{ left: `${pct(NOW_HOUR)}%` }}
+                          >
+                            <span className="absolute -top-1 left-1/2 -translate-x-1/2 rounded-md bg-foreground px-1.5 py-0.5 text-[10px] font-bold text-background">
+                              NOW
+                            </span>
+                          </div>
+                        )}
+                        <button
+                          onClick={() => onSelect(b.id)}
+                          className={`absolute top-2 bottom-2 flex items-center gap-1.5 rounded-full border px-3 text-left transition-all ${s.bar} ${
+                            selected
+                              ? "ring-2 ring-primary ring-offset-2 ring-offset-surface"
+                              : "hover:brightness-95"
+                          }`}
+                          style={{
+                            left: `${pct(b.startHour)}%`,
+                            minWidth: `${pct(b.endHour) - pct(b.startHour)}%`,
+                          }}
+                        >
+                          <span className={`h-2 w-2 shrink-0 rounded-full ${s.dot}`} />
+                          <span className={`text-xs font-semibold whitespace-nowrap ${s.text}`}>
+                            {b.label ?? `${formatHour(b.startHour)} · ${s.label}`}
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -145,10 +197,10 @@ export function Timeline({
 
 function Legend() {
   return (
-    <div className="hidden md:flex items-center gap-3 text-[11px] text-muted-foreground">
+    <div className="flex flex-wrap items-center gap-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
       {(Object.keys(statusStyles) as Status[]).map((k) => (
         <div key={k} className="flex items-center gap-1.5">
-          <span className={`h-2 w-2 rounded-full ${statusStyles[k].dot}`} />
+          <span className={`h-2.5 w-2.5 rounded-full ${statusStyles[k].dot}`} />
           {statusStyles[k].label}
         </div>
       ))}
@@ -156,12 +208,27 @@ function Legend() {
   );
 }
 
+function CalendarIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" />
+      <path d="M16 2v4M8 2v4M3 10h18" />
+    </svg>
+  );
+}
+
+function formatRuler(h: number) {
+  const period = h < 12 ? "am" : "pm";
+  const display = h % 12 === 0 ? 12 : h % 12;
+  return `${display}${period}`;
+}
+
 function formatHour(h: number) {
   const hr = Math.floor(h);
   const m = Math.round((h - hr) * 60);
-  const period = hr < 12 ? "am" : "pm";
+  const period = hr < 12 ? "AM" : "PM";
   const display = hr % 12 === 0 ? 12 : hr % 12;
-  return m ? `${display}:${m.toString().padStart(2, "0")}${period}` : `${display}${period}`;
+  return m ? `${display}:${m.toString().padStart(2, "0")} ${period}` : `${display}:00 ${period}`;
 }
 
-export type { Booking };
+export type { Booking, Status };
