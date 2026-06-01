@@ -197,7 +197,7 @@ export function Timeline({
   );
 }
 
-function Legend() {
+export function Legend() {
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
       {(Object.keys(statusStyles) as Status[]).map((k) => (
