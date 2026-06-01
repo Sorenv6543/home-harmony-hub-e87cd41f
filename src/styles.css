@@ -1,6 +1,8 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Figtree:wght@400;500;600;700&display=swap");
+
 
 @custom-variant dark (&:is(.dark *));
 
@@ -39,36 +41,41 @@
   --color-danger-soft: var(--danger-soft);
   --color-info: var(--info);
   --color-info-soft: var(--info-soft);
-  --shadow-card: 0 1px 2px oklch(0 0 0 / 0.04), 0 1px 0 oklch(0 0 0 / 0.02);
-  --shadow-lift: 0 10px 30px -12px oklch(0.2 0.04 60 / 0.12);
+  --shadow-card: 0 1px 2px oklch(0.3 0.04 60 / 0.05), 0 1px 0 oklch(0.3 0.04 60 / 0.03);
+  --shadow-lift: 0 18px 40px -18px oklch(0.3 0.06 60 / 0.18), 0 2px 6px -2px oklch(0.3 0.06 60 / 0.06);
+  --shadow-glow: 0 0 0 1px oklch(0.42 0.08 155 / 0.08), 0 24px 60px -24px oklch(0.42 0.08 155 / 0.28);
+  --gradient-warm: linear-gradient(135deg, oklch(0.97 0.025 75) 0%, oklch(0.94 0.04 70) 100%);
+  --gradient-primary: linear-gradient(135deg, oklch(0.46 0.09 155) 0%, oklch(0.38 0.07 160) 100%);
+  --font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", "Figtree", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
-  --radius: 0.875rem;
-  /* Warm, approachable palette inspired by trackit's clean layout */
-  --background: oklch(0.985 0.005 80);
-  --foreground: oklch(0.22 0.02 60);
+  --radius: 1rem;
+  /* Warm Sand palette — premium, friendly home-services */
+  --background: oklch(0.975 0.012 80);
+  --foreground: oklch(0.24 0.025 60);
 
   --surface: oklch(1 0 0);
-  --surface-muted: oklch(0.97 0.008 75);
+  --surface-muted: oklch(0.965 0.014 75);
 
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.02 60);
+  --card-foreground: oklch(0.24 0.025 60);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.02 60);
+  --popover-foreground: oklch(0.24 0.025 60);
 
-  /* Warm forest green primary */
+  /* Warm forest green primary, sand accents */
   --primary: oklch(0.42 0.08 155);
   --primary-foreground: oklch(0.985 0.005 80);
 
-  --secondary: oklch(0.96 0.01 75);
-  --secondary-foreground: oklch(0.3 0.02 60);
+  --secondary: oklch(0.94 0.025 75);
+  --secondary-foreground: oklch(0.3 0.025 60);
 
-  --muted: oklch(0.96 0.008 75);
-  --muted-foreground: oklch(0.5 0.015 65);
+  --muted: oklch(0.95 0.015 75);
+  --muted-foreground: oklch(0.5 0.018 65);
 
-  --accent: oklch(0.94 0.02 70);
-  --accent-foreground: oklch(0.3 0.02 60);
+  --accent: oklch(0.92 0.035 70);
+  --accent-foreground: oklch(0.3 0.025 60);
 
   --success: oklch(0.55 0.12 155);
   --success-soft: oklch(0.94 0.04 155);
@@ -82,8 +89,8 @@
   --destructive: oklch(0.55 0.18 25);
   --destructive-foreground: oklch(0.985 0 0);
 
-  --border: oklch(0.92 0.008 75);
-  --input: oklch(0.92 0.008 75);
+  --border: oklch(0.9 0.012 75);
+  --input: oklch(0.9 0.012 75);
   --ring: oklch(0.42 0.08 155);
 }
 
@@ -92,6 +99,13 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-family: var(--font-sans);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4, h5 {
+    font-family: var(--font-display);
+    letter-spacing: -0.015em;
   }
 }
+
