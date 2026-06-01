@@ -62,7 +62,7 @@ const bookings: Booking[] = [
 ];
 
 function DashboardPage() {
-  const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
+  const [selectedId, setSelectedId] = useState<string | undefined>("1");
   const selected = bookings.find((b) => b.id === selectedId);
 
   return (
