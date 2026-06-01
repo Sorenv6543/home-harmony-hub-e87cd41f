@@ -1,11 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Bell, Search, Plus, CalendarCheck, Clock } from "lucide-react";
+import { Bell, Search, Plus, CalendarCheck, Clock, Sun } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { Timeline, Legend, type Booking } from "@/components/dashboard/Timeline";
 import { BookingsTable } from "@/components/dashboard/BookingsTable";
 import { BookingDetail } from "@/components/dashboard/BookingDetail";
+import { EmptyState } from "@/components/dashboard/EmptyState";
+
 
 
 export const Route = createFileRoute("/")({
