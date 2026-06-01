@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Bell, Search, Plus, CalendarCheck, Clock, AlertCircle, UserX } from "lucide-react";
+import { Bell, Search, Plus, CalendarCheck, Clock } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { Timeline, type Booking } from "@/components/dashboard/Timeline";
@@ -22,47 +22,107 @@ export const Route = createFileRoute("/")({
 const bookings: Booking[] = [
   {
     id: "1",
-    customer: "Sarah Jenkins",
-    address: "402 Maple St",
+    customer: "The Okafor Family",
+    address: "1600 Pennsylvania Ave N…",
+    city: "Washington, DC",
     service: "Deep Clean · 3 bd",
-    startHour: 8,
-    endHour: 11.5,
-    status: "unassigned",
+    day: "today",
+    startHour: 11,
+    endHour: 12.5,
+    status: "check-out",
+    label: "11:00 AM · Check-out",
   },
   {
     id: "2",
     customer: "Michael Chen",
-    address: "12 Oak Rd",
+    address: "123 Main Street",
+    city: "Springfield, IL",
     service: "Standard · 2 bd",
-    startHour: 10,
-    endHour: 12.5,
-    status: "confirmed",
+    day: "today",
+    startHour: 15,
+    endHour: 16.5,
+    status: "check-in",
     cleaner: "Maria W.",
+    label: "3:00 PM · Check-in",
   },
   {
     id: "3",
-    customer: "Priya Shah",
-    address: "1600 Pennsylvania Ave",
-    service: "Move-Out · 4 bd",
-    startHour: 13,
-    endHour: 16,
-    status: "pending",
+    customer: "Sarah Jenkins",
+    address: "402 Maple St",
+    city: "Madison, WI",
+    service: "Standard · 2 bd",
+    day: "today",
+    startHour: 8.5,
+    endHour: 10,
+    status: "check-in",
     cleaner: "Jordan S.",
+    label: "8:30 AM · Check-in",
   },
   {
     id: "4",
+    customer: "Priya Shah",
+    address: "123 Main Street",
+    city: "Springfield, IL",
+    service: "Turn · 2 bd",
+    day: "tomorrow",
+    startHour: 11,
+    endHour: 13,
+    status: "turn",
+    label: "11:00 AM · Turn",
+  },
+  {
+    id: "5",
     customer: "Tomás Rivera",
-    address: "88 Birch Ln",
-    service: "Standard · 1 bd",
-    startHour: 15,
-    endHour: 17,
-    status: "confirmed",
+    address: "Lakeview Cottage",
+    city: "Lake Geneva, WI",
+    service: "Check-in · 4 bd",
+    day: "tomorrow",
+    startHour: 16,
+    endHour: 17.5,
+    status: "check-in",
     cleaner: "Elena R.",
+    label: "4:00 PM · Check-in",
+  },
+  {
+    id: "6",
+    customer: "Anna Lee",
+    address: "Lakeview Cottage",
+    city: "Lake Geneva, WI",
+    service: "Check-out · 4 bd",
+    day: "wed",
+    startHour: 10,
+    endHour: 11.5,
+    status: "check-out",
+    label: "10:00 AM · Check-out",
+  },
+  {
+    id: "7",
+    customer: "Devon Park",
+    address: "55 Cedar Ct",
+    city: "Austin, TX",
+    service: "Urgent fix · 1 bd",
+    day: "wed",
+    startHour: 14,
+    endHour: 15,
+    status: "urgent",
+    label: "2:00 PM · Urgent",
+  },
+  {
+    id: "8",
+    customer: "Whitman Family",
+    address: "8 Pinecrest Dr",
+    city: "Boulder, CO",
+    service: "Turn · 3 bd",
+    day: "thu",
+    startHour: 12,
+    endHour: 13.5,
+    status: "turn",
+    label: "12:00 PM · Turn",
   },
 ];
 
 function DashboardPage() {
-  const [selectedId, setSelectedId] = useState<string | undefined>("1");
+  const [selectedId, setSelectedId] = useState<string | undefined>("2");
   const selected = bookings.find((b) => b.id === selectedId);
 
   return (
@@ -102,28 +162,27 @@ function DashboardPage() {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
-          {/* Welcome */}
-          <section>
-            <h2 className="text-2xl font-semibold tracking-tight text-foreground">
-              Good morning, Elena
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              You have <span className="font-medium text-foreground">4 bookings</span> today
-              and <span className="font-medium text-danger">1 unassigned</span> needing attention.
-            </p>
-          </section>
-
-          {/* Quick stats */}
-          <section className="grid grid-cols-2 gap-4">
-            <StatCard label="Today's bookings" value="4" icon={CalendarCheck} />
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 space-y-5">
+          {/* Welcome + stats on the same row */}
+          <section className="grid grid-cols-1 lg:grid-cols-[1fr_auto_auto] items-center gap-4 rounded-2xl border border-border bg-surface p-4 shadow-card">
+            <div>
+              <h2 className="text-xl font-semibold tracking-tight text-foreground">
+                Good morning, Elena
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                You have <span className="font-semibold text-foreground">4 bookings</span> today
+                {" · "}
+                <span className="font-semibold text-danger">1 urgent</span> needs attention.
+              </p>
+            </div>
+            <StatCard label="Today" value="4" icon={CalendarCheck} />
             <StatCard label="This week" value="48" icon={Clock} />
           </section>
 
           {/* Timeline */}
           <Timeline bookings={bookings} onSelect={setSelectedId} selectedId={selectedId} />
 
-          {/* Detail + Table */}
+          {/* Detail (slide-in panel) */}
           {selected && (
             <BookingDetail booking={selected} onClose={() => setSelectedId(undefined)} />
           )}
