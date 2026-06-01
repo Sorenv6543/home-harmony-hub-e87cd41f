@@ -89,8 +89,7 @@ export function Timeline({
             <p className="text-xs text-muted-foreground">Next few days · tap a booking for details</p>
           </div>
         </div>
-        <div className="flex items-center gap-4">
-          <Legend />
+        <div className="flex items-center gap-3">
           <div className="flex rounded-lg border border-border bg-surface-muted p-0.5">
             {(["Day", "Week", "Month"] as const).map((z) => (
               <button
@@ -107,6 +106,7 @@ export function Timeline({
             ))}
           </div>
         </div>
+
       </div>
 
       <div className="px-5 pb-5 pt-4">
