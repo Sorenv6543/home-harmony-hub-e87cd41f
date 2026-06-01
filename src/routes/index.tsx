@@ -239,21 +239,24 @@ function DashboardPage() {
         </header>
 
         <main className="flex-1 overflow-y-auto p-4 md:p-6 space-y-5">
-          {/* Welcome + stats on the same row */}
-          <section className="grid grid-cols-1 lg:grid-cols-[1fr_auto_auto] items-center gap-4 rounded-2xl border border-border bg-surface p-4 shadow-card">
-            <div>
-              <h2 className="text-xl font-semibold tracking-tight text-foreground">
+          {/* Welcome + color key + stats on a single compact row */}
+          <section className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 rounded-2xl border border-border bg-surface px-4 py-3 shadow-card">
+            <div className="min-w-0">
+              <h2 className="text-lg font-semibold tracking-tight text-foreground leading-tight">
                 Good morning, Elena
               </h2>
-              <p className="text-sm text-muted-foreground">
-                You have <span className="font-semibold text-foreground">4 bookings</span> today
-                {" · "}
-                <span className="font-semibold text-danger">1 urgent</span> needs attention.
+              <p className="text-sm text-muted-foreground leading-tight">
+                <span className="font-semibold text-foreground">4 bookings</span> today ·{" "}
+                <span className="font-semibold text-danger">1 urgent</span>
               </p>
             </div>
-            <StatCard label="Today" value="4" icon={CalendarCheck} />
-            <StatCard label="This week" value="48" icon={Clock} />
+            <Legend />
+            <div className="flex items-center gap-3">
+              <StatCard label="Today" value="4" icon={CalendarCheck} />
+              <StatCard label="Week" value="48" icon={Clock} />
+            </div>
           </section>
+
 
           {/* Timeline */}
           <Timeline bookings={bookings} onSelect={setSelectedId} selectedId={selectedId} />
