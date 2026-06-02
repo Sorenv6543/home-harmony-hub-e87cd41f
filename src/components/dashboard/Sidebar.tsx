@@ -12,6 +12,7 @@ import {
   ClipboardList,
   Sparkle,
 } from "lucide-react";
+import { store } from "@/lib/store";
 
 const dashboardItems = [
   { label: "Booking Dashboard", to: "/", icon: LayoutGrid },
