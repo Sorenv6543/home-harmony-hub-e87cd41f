@@ -92,6 +92,11 @@ export const store = {
   addProperty(p: Property) {
     set({ properties: [...state.properties, p] });
   },
+  updateProperty(id: string, patch: Partial<Property>) {
+    set({
+      properties: state.properties.map((p) => (p.id === id ? { ...p, ...patch } : p)),
+    });
+  },
   upsertSchedule(schedule: RecurringSchedule) {
     const others = state.schedules.filter((s) => s.propertyId !== schedule.propertyId);
     set({ schedules: [...others, schedule] });
