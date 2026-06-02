@@ -456,12 +456,20 @@ function DashboardPage() {
         open={modalOpen}
         onOpenChange={setModalOpen}
         onCreate={(p) => {
-          setProperties((arr) => [...arr, p]);
+          store.addProperty(p);
           setChecklist((c) => ({ ...c, property: true }));
           setShowEmpty(true);
         }}
       />
     </div>
   );
+}
+
+function formatHourLabel(h: number) {
+  const hr = Math.floor(h);
+  const m = Math.round((h - hr) * 60);
+  const period = hr < 12 ? "AM" : "PM";
+  const display = hr % 12 === 0 ? 12 : hr % 12;
+  return m ? `${display}:${m.toString().padStart(2, "0")} ${period}` : `${display}:00 ${period}`;
 }
 
