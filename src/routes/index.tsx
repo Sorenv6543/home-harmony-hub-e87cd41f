@@ -204,15 +204,97 @@ const bookings: Booking[] = [
 function DashboardPage() {
   const [selectedId, setSelectedId] = useState<string | undefined>("2");
   const [showEmpty, setShowEmpty] = useState(true);
-  const [properties, setProperties] = useState<Property[]>([]);
+  const properties = useStore((s) => s.properties);
+  const schedules = useStore((s) => s.schedules);
+  const skipped = useStore((s) => s.skipped);
+  const occurrenceCleaners = useStore((s) => s.occurrenceCleaners);
   const [modalOpen, setModalOpen] = useState(false);
   const [checklist, setChecklist] = useState<ChecklistState>({
     property: false,
     booking: false,
     turn: false,
   });
-  const selected = bookings.find((b) => b.id === selectedId);
-  const activeBookings = showEmpty ? [] : bookings;
+
+  // Generate recurring turns and merge into the active timeline.
+  const recurringBookings = useMemo<Booking[]>(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const out: Booking[] = [];
+    for (const schedule of schedules) {
+      const property = properties.find((p) => p.id === schedule.propertyId);
+      if (!property) continue;
+      const occurrences = generateOccurrences(schedule, 8, today);
+      for (const occ of occurrences) {
+        if (skipped.includes(occ.key)) continue;
+        const offset = Math.round((occ.date.getTime() - today.getTime()) / 86400000);
+        const day =
+          offset === 0
+            ? "today"
+            : offset === 1
+              ? "tomorrow"
+              : offset === 2
+                ? "wed"
+                : offset === 3
+                  ? "thu"
+                  : undefined;
+        if (!day) continue; // outside the visible 4-day window
+        const [hh, mm] = occ.time.split(":").map(Number);
+        const startHour = hh + (mm || 0) / 60;
+        const endHour = Math.min(20, startHour + occ.durationMin / 60);
+        const cleaner = occurrenceCleaners[occ.key] ?? occ.cleaner;
+        out.push({
+          id: `rec-${occ.key}`,
+          customer: property.address,
+          address: property.address,
+          city: `${property.city}, ${property.state}`,
+          service: `Recurring Turn · ${property.propertyType}`,
+          day,
+          startHour,
+          endHour,
+          status: "turn",
+          cleaner,
+          label: `${formatHourLabel(startHour)} · Recurring Turn`,
+          recurring: true,
+          cadence: occ.cadenceLabel,
+          seriesId: occ.scheduleId,
+          occurrenceKey: occ.key,
+          propertyId: occ.propertyId,
+          occurrenceDateISO: occ.date.toISOString().slice(0, 10),
+        });
+      }
+    }
+    return out;
+  }, [schedules, properties, skipped, occurrenceCleaners]);
+
+  // Unassigned recurring turns within next 7 days (for alert + attention badge).
+  const unassignedWeek = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const horizon = new Date(today);
+    horizon.setDate(horizon.getDate() + 7);
+    let count = 0;
+    for (const schedule of schedules) {
+      const occurrences = generateOccurrences(schedule, 1, today);
+      for (const occ of occurrences) {
+        if (skipped.includes(occ.key)) continue;
+        if (occ.date > horizon) continue;
+        const cleaner = occurrenceCleaners[occ.key] ?? occ.cleaner;
+        if (!cleaner) count++;
+      }
+    }
+    return count;
+  }, [schedules, skipped, occurrenceCleaners]);
+
+  const baseBookings = showEmpty ? [] : bookings;
+  const activeBookings = useMemo(
+    () => [...baseBookings, ...recurringBookings],
+    [baseBookings, recurringBookings],
+  );
+
+  const selected = activeBookings.find((b) => b.id === selectedId);
+
+  const urgentCount = baseBookings.filter((b) => b.status === "urgent").length;
+  const attentionCount = urgentCount + unassignedWeek;
 
   return (
     <div className="flex min-h-screen w-full bg-background">
