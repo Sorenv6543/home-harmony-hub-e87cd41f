@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Bell, Search, Plus, CalendarCheck, Clock, Sun } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
