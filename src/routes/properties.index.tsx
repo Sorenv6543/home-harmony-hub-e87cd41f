@@ -93,7 +93,7 @@ function PropertiesPage() {
 
       <AddPropertyModal
         open={modalOpen}
-        onClose={() => setModalOpen(false)}
+        onOpenChange={setModalOpen}
         onCreate={(p) => {
           store.addProperty(p);
           setModalOpen(false);
