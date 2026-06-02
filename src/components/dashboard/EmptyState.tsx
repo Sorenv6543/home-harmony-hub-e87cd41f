@@ -143,35 +143,39 @@ export function EmptyState({
         ) : (
           <ul className="mt-5 space-y-3">
             {properties.map((p) => (
-              <li
-                key={p.id}
-                className="flex items-center gap-4 rounded-2xl border border-border bg-surface-muted/30 p-4"
-              >
-                <span
-                  className="h-10 w-10 shrink-0 rounded-xl"
-                  style={{ backgroundColor: p.color }}
-                  aria-hidden
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-foreground">
-                    {p.address}
-                    {p.unit ? `, ${p.unit}` : ""}
-                  </p>
-                  <p className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-muted-foreground">
-                    <span className="inline-flex items-center gap-1">
-                      <MapPin className="h-3 w-3" /> {p.city}, {p.state}
-                    </span>
-                    <span className="inline-flex items-center gap-1">
-                      <Bed className="h-3 w-3" /> {p.bedrooms || 0}
-                    </span>
-                    <span className="inline-flex items-center gap-1">
-                      <Bath className="h-3 w-3" /> {p.bathrooms || 0}
-                    </span>
-                  </p>
-                </div>
-                <span className="rounded-full bg-surface px-2.5 py-1 text-[11px] font-semibold text-foreground/70">
-                  {p.propertyType}
-                </span>
+              <li key={p.id}>
+                <Link
+                  to="/properties/$id"
+                  params={{ id: p.id }}
+                  className="group flex items-center gap-4 rounded-2xl border border-border bg-surface-muted/30 p-4 transition-colors hover:border-primary/30 hover:bg-surface-muted/60"
+                >
+                  <span
+                    className="h-10 w-10 shrink-0 rounded-xl"
+                    style={{ backgroundColor: p.color }}
+                    aria-hidden
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-foreground">
+                      {p.address}
+                      {p.unit ? `, ${p.unit}` : ""}
+                    </p>
+                    <p className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-muted-foreground">
+                      <span className="inline-flex items-center gap-1">
+                        <MapPin className="h-3 w-3" /> {p.city}, {p.state}
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <Bed className="h-3 w-3" /> {p.bedrooms || 0}
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <Bath className="h-3 w-3" /> {p.bathrooms || 0}
+                      </span>
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-surface px-2.5 py-1 text-[11px] font-semibold text-foreground/70">
+                    {p.propertyType}
+                  </span>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                </Link>
               </li>
             ))}
           </ul>
