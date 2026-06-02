@@ -472,7 +472,7 @@ export function AddPropertyModal({
               className="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-lift transition-transform hover:-translate-y-0.5"
               style={{ backgroundImage: "var(--gradient-primary)" }}
             >
-              Create Property <Check className="h-4 w-4" />
+              {isEdit ? "Save changes" : "Create Property"} <Check className="h-4 w-4" />
             </button>
           )}
         </div>
