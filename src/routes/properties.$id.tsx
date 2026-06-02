@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
   ArrowLeft,
@@ -48,7 +48,16 @@ function PropertyDetailPage() {
   const [accessDraft, setAccessDraft] = useState<string | null>(null);
 
   if (!property) {
-    throw notFound();
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="text-center">
+          <p className="text-lg font-semibold">Property not found</p>
+          <Link to="/" className="mt-3 inline-block text-sm text-primary underline">
+            Back to Overview
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   const upcomingTurns = useMemo(() => {
