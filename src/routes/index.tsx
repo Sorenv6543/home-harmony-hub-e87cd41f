@@ -215,6 +215,13 @@ function DashboardPage() {
     booking: false,
     turn: false,
   });
+  const [showPropertiesHint, setShowPropertiesHint] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!showEmpty && properties.length > 0 && !window.localStorage.getItem("claro.hint.properties.dismissed")) {
+      setShowPropertiesHint(true);
+    }
+  }, [showEmpty, properties.length]);
 
   // When a custom booking is added, exit empty mode so it shows on the timeline.
   useEffect(() => {
@@ -481,8 +488,51 @@ function DashboardPage() {
                 </div>
               </section>
 
+              {properties.length > 0 && (
+                <section id="your-properties" className="space-y-4 scroll-mt-20">
+                  {showPropertiesHint && (
+                    <div className="flex items-start gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-4">
+                      <span className="mt-0.5 text-lg" aria-hidden>👇</span>
+                      <div className="flex-1 text-sm text-foreground">
+                        <p className="font-semibold">Tip: tap a property below</p>
+                        <p className="text-muted-foreground">
+                          Open any property to see its turns, calendar sync, and access notes.
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setShowPropertiesHint(false);
+                          if (typeof window !== "undefined") {
+                            window.localStorage.setItem("claro.hint.properties.dismissed", "1");
+                          }
+                        }}
+                        className="rounded-md px-2 py-1 text-xs font-semibold text-muted-foreground hover:bg-surface-muted"
+                      >
+                        Got it
+                      </button>
+                    </div>
+                  )}
+                  <div className="flex flex-wrap items-end justify-between gap-3">
+                    <div>
+                      <h3 className="text-lg md:text-xl font-semibold tracking-tight text-foreground">
+                        Your properties
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Tap a property to view details, sync calendars, and manage settings.
+                      </p>
+                    </div>
+                    <Link to="/properties" className="text-sm font-semibold text-primary hover:underline">
+                      View all →
+                    </Link>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {properties.map((p) => (
+                      <PropertyCard key={p.id} property={p} />
+                    ))}
+                  </div>
+                </section>
+              )}
 
-              {/* Section header for timeline */}
               {/* Section header for timeline */}
               <section id="bookings-timeline" className="space-y-4 scroll-mt-20">
                 <div className="flex flex-wrap items-end justify-between gap-3">
@@ -502,26 +552,9 @@ function DashboardPage() {
 
               {/* Upcoming list */}
               <BookingsTable bookings={activeBookings} />
-
-              {properties.length > 0 && (
-                <section className="space-y-4">
-                  <div>
-                    <h3 className="text-lg md:text-xl font-semibold tracking-tight text-foreground">
-                      Your properties
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      Tap a property to view details, sync calendars, and manage settings.
-                    </p>
-                  </div>
-                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    {properties.map((p) => (
-                      <PropertyCard key={p.id} property={p} />
-                    ))}
-                  </div>
-                </section>
-              )}
             </>
           )}
+
 
           {/* Detail (slide-in panel) */}
           {selected && !showEmpty && (
