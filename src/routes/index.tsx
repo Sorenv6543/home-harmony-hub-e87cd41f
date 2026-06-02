@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Bell, Search, Plus, CalendarCheck, Clock, Sun } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
@@ -433,7 +433,10 @@ function DashboardPage() {
           {showEmpty ? (
             <EmptyState
               onAddProperty={() => setModalOpen(true)}
-              onPreviewSample={() => setShowEmpty(false)}
+              onPreviewSample={() => {
+                store.seedSampleProperties();
+                setShowEmpty(false);
+              }}
               completed={checklist}
               properties={properties}
             />
@@ -499,6 +502,24 @@ function DashboardPage() {
 
               {/* Upcoming list */}
               <BookingsTable bookings={activeBookings} />
+
+              {properties.length > 0 && (
+                <section className="space-y-4">
+                  <div>
+                    <h3 className="text-lg md:text-xl font-semibold tracking-tight text-foreground">
+                      Your properties
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Tap a property to view details, sync calendars, and manage settings.
+                    </p>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {properties.map((p) => (
+                      <PropertyCard key={p.id} property={p} />
+                    ))}
+                  </div>
+                </section>
+              )}
             </>
           )}
 
@@ -528,5 +549,28 @@ function formatHourLabel(h: number) {
   const period = hr < 12 ? "AM" : "PM";
   const display = hr % 12 === 0 ? 12 : hr % 12;
   return m ? `${display}:${m.toString().padStart(2, "0")} ${period}` : `${display}:00 ${period}`;
+}
+
+function PropertyCard({ property: p }: { property: import("@/components/dashboard/AddPropertyModal").Property }) {
+  return (
+    <Link
+      to="/properties/$id"
+      params={{ id: p.id }}
+      className="group flex items-center gap-4 rounded-2xl border border-border bg-surface p-4 shadow-card transition-colors hover:border-primary/30"
+    >
+      <span className="h-10 w-10 shrink-0 rounded-xl" style={{ backgroundColor: p.color }} aria-hidden />
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-semibold text-foreground">
+          {p.address}{p.unit ? `, ${p.unit}` : ""}
+        </p>
+        <p className="mt-0.5 truncate text-[12px] text-muted-foreground">
+          {p.city}, {p.state} · {p.bedrooms} bd · {p.bathrooms} ba
+        </p>
+      </div>
+      <span className="rounded-full bg-surface-muted px-2.5 py-1 text-[11px] font-semibold text-foreground/70">
+        {p.propertyType}
+      </span>
+    </Link>
+  );
 }
 
