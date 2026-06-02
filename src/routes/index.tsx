@@ -433,7 +433,10 @@ function DashboardPage() {
           {showEmpty ? (
             <EmptyState
               onAddProperty={() => setModalOpen(true)}
-              onPreviewSample={() => setShowEmpty(false)}
+              onPreviewSample={() => {
+                store.seedSampleProperties();
+                setShowEmpty(false);
+              }}
               completed={checklist}
               properties={properties}
             />
