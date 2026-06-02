@@ -81,20 +81,37 @@ export function AddPropertyModal({
   open,
   onOpenChange,
   onCreate,
+  initial,
+  onUpdate,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreate: (p: Property) => void;
+  onCreate?: (p: Property) => void;
+  initial?: Property;
+  onUpdate?: (p: Property) => void;
 }) {
+  const isEdit = !!initial;
   const [step, setStep] = useState(0);
-  const [data, setData] = useState<Partial<Property>>({
-    color: COLORS[0].value,
-    propertyType: PROPERTY_TYPES[0],
-    cleaningDuration: 120,
-    pricingTier: "Standard",
-  });
-  const [airbnbOn, setAirbnbOn] = useState(false);
-  const [vrboOn, setVrboOn] = useState(false);
+  const [data, setData] = useState<Partial<Property>>(
+    initial ?? {
+      color: COLORS[0].value,
+      propertyType: PROPERTY_TYPES[0],
+      cleaningDuration: 120,
+      pricingTier: "Standard",
+    },
+  );
+  const [airbnbOn, setAirbnbOn] = useState(!!initial?.airbnbIcs);
+  const [vrboOn, setVrboOn] = useState(!!initial?.vrboIcs);
+
+  // Re-seed when opening with new initial data
+  useEffect(() => {
+    if (open && initial) {
+      setData(initial);
+      setAirbnbOn(!!initial.airbnbIcs);
+      setVrboOn(!!initial.vrboIcs);
+      setStep(0);
+    }
+  }, [open, initial]);
 
   const set = <K extends keyof Property>(key: K, value: Property[K]) =>
     setData((d) => ({ ...d, [key]: value }));
@@ -113,7 +130,7 @@ export function AddPropertyModal({
 
   const handleSubmit = () => {
     const property: Property = {
-      id: crypto.randomUUID(),
+      id: initial?.id ?? crypto.randomUUID(),
       address: data.address || "Untitled property",
       unit: data.unit,
       city: data.city || "",
@@ -134,11 +151,17 @@ export function AddPropertyModal({
       airbnbIcs: airbnbOn ? data.airbnbIcs : undefined,
       vrboIcs: vrboOn ? data.vrboIcs : undefined,
     };
-    onCreate(property);
-    toast.success("Property added! You're all set.");
+    if (isEdit) {
+      onUpdate?.(property);
+      toast.success("Property updated.");
+    } else {
+      onCreate?.(property);
+      toast.success("Property added! You're all set.");
+    }
     onOpenChange(false);
-    reset();
+    if (!isEdit) reset();
   };
+
 
   return (
     <Dialog
