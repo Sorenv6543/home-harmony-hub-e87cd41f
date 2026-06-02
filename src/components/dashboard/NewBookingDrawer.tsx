@@ -124,13 +124,6 @@ export function NewBookingDrawer() {
           <SheetDescription className="text-sm text-muted-foreground mt-0.5">
             Add a guest stay, owner block, or hold
           </SheetDescription>
-          <button
-            onClick={() => store.closeNewBooking()}
-            className="absolute right-4 top-4 rounded-md p-1.5 text-muted-foreground hover:bg-surface-muted hover:text-foreground"
-            aria-label="Close"
-          >
-            <X className="h-4 w-4" />
-          </button>
         </div>
 
         {/* Form (scrollable) */}
