@@ -86,7 +86,7 @@ function NavGroup({
         {items.map((item) => {
           const active = pathname === item.to;
           const Icon = item.icon;
-          const routable = item.to === "/" || item.to === "/services";
+          const routable = item.to === "/" || item.to === "/services" || item.to === "/properties";
           const className = `group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
             active
               ? "bg-primary/10 text-primary font-medium"
