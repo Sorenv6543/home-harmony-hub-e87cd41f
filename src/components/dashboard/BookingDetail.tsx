@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Link } from "@tanstack/react-router";
 import type { Booking } from "./Timeline";
 import {
   Calendar,
@@ -10,7 +9,6 @@ import {
   Phone,
   MessageCircle,
   Repeat,
-  AlertTriangle,
   CalendarOff,
   Trash2,
 } from "lucide-react";
@@ -52,7 +50,6 @@ export function BookingDetail({
   }, []);
 
   const isRecurring = !!booking.recurring;
-  const notLinked = !localCompany;
 
   const skipOccurrence = () => {
     if (!booking.occurrenceKey) return;
@@ -108,24 +105,6 @@ export function BookingDetail({
         </div>
 
         <div className="flex-1 overflow-y-auto">
-          {notLinked && (
-            <div className="mx-6 mt-5 flex items-start gap-3 rounded-xl border border-warning/40 bg-warning-soft px-4 py-3">
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
-              <div className="min-w-0">
-                <p className="text-[13px] font-medium text-foreground">
-                  No cleaning company linked — add one in Service Settings.
-                </p>
-                <Link
-                  to="/services"
-                  onClick={handleClose}
-                  className="mt-1 inline-block text-[12px] font-semibold text-foreground/80 hover:text-foreground"
-                >
-                  Add cleaning company →
-                </Link>
-              </div>
-            </div>
-          )}
-
           <div className="grid gap-5 px-6 py-5">
             <DetailRow icon={Calendar} label="Date & time">
               {booking.occurrenceDateISO
@@ -143,13 +122,7 @@ export function BookingDetail({
               {localCompany ? (
                 <span className="text-foreground">{localCompany}</span>
               ) : (
-                <Link
-                  to="/services"
-                  onClick={handleClose}
-                  className="text-primary font-semibold hover:underline"
-                >
-                  + Link a cleaning company
-                </Link>
+                <span className="text-muted-foreground">—</span>
               )}
             </DetailRow>
 
