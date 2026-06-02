@@ -106,6 +106,15 @@ export const store = {
   setOccurrenceCleaner(key: string, cleaner: string) {
     set({ occurrenceCleaners: { ...state.occurrenceCleaners, [key]: cleaner } });
   },
+  addCustomBooking(b: CustomBooking) {
+    set({ customBookings: [...state.customBookings, b] });
+  },
+  openNewBooking() {
+    set({ newBookingOpen: true });
+  },
+  closeNewBooking() {
+    set({ newBookingOpen: false });
+  },
 };
 
 export function useStore<T>(selector: (s: State) => T): T {
