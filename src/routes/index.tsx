@@ -6,7 +6,8 @@ import { StatCard } from "@/components/dashboard/StatCard";
 import { Timeline, Legend, type Booking } from "@/components/dashboard/Timeline";
 import { BookingsTable } from "@/components/dashboard/BookingsTable";
 import { BookingDetail } from "@/components/dashboard/BookingDetail";
-import { EmptyState } from "@/components/dashboard/EmptyState";
+import { EmptyState, type ChecklistState } from "@/components/dashboard/EmptyState";
+import { AddPropertyModal, type Property } from "@/components/dashboard/AddPropertyModal";
 
 
 
