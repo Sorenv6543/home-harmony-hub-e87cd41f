@@ -18,12 +18,10 @@ export type RecurringSchedule = {
   daysOfWeek: Dow[];
   time: string; // "HH:MM" 24h
   durationMin: number;
-  cleaner?: string;
+  cleaningCompany?: string;
   startDate: string; // ISO yyyy-mm-dd
   endDate?: string; // ISO yyyy-mm-dd
 };
-
-export const CLEANERS = ["Maria W.", "Jordan S.", "Elena R.", "Devon P."];
 
 type State = {
   properties: Property[];
@@ -107,7 +105,7 @@ export type Occurrence = {
   date: Date;
   time: string;
   durationMin: number;
-  cleaner?: string;
+  cleaningCompany?: string;
   cadenceLabel: string;
 };
 
@@ -171,7 +169,7 @@ export function generateOccurrences(
           date: new Date(cursor),
           time: schedule.time,
           durationMin: schedule.durationMin,
-          cleaner: schedule.cleaner,
+          cleaningCompany: schedule.cleaningCompany,
           cadenceLabel: cadenceLabel(schedule),
         });
       }

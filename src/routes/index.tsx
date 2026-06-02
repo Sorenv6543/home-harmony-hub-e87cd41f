@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Bell, Search, Plus, CalendarCheck, Clock, Sun, AlertTriangle } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
@@ -47,7 +47,7 @@ const bookings: Booking[] = [
     startHour: 15,
     endHour: 16.5,
     status: "check-in",
-    cleaner: "Maria W.",
+    cleaningCompany: "Bright & Clean Co.",
     label: "3:00 PM · Check-in",
   },
   {
@@ -60,7 +60,7 @@ const bookings: Booking[] = [
     startHour: 8.5,
     endHour: 10,
     status: "check-in",
-    cleaner: "Jordan S.",
+    cleaningCompany: "Sparkle Pros",
     label: "8:30 AM · Check-in",
   },
   {
@@ -85,7 +85,7 @@ const bookings: Booking[] = [
     startHour: 16,
     endHour: 17.5,
     status: "check-in",
-    cleaner: "Elena R.",
+    cleaningCompany: "Bright & Clean Co.",
     label: "4:00 PM · Check-in",
   },
   {
@@ -134,7 +134,7 @@ const bookings: Booking[] = [
     startHour: 16,
     endHour: 17.5,
     status: "check-in",
-    cleaner: "Maria W.",
+    cleaningCompany: "Bright & Clean Co.",
     label: "4:00 PM · Check-in",
   },
   {
@@ -183,7 +183,7 @@ const bookings: Booking[] = [
     startHour: 8,
     endHour: 9.5,
     status: "check-in",
-    cleaner: "Jordan S.",
+    cleaningCompany: "Sparkle Pros",
     label: "8:00 AM · Check-in",
   },
   {
@@ -241,7 +241,7 @@ function DashboardPage() {
         const [hh, mm] = occ.time.split(":").map(Number);
         const startHour = hh + (mm || 0) / 60;
         const endHour = Math.min(20, startHour + occ.durationMin / 60);
-        const cleaner = occurrenceCleaners[occ.key] ?? occ.cleaner;
+        const cleaningCompany = occurrenceCleaners[occ.key] ?? occ.cleaningCompany;
         out.push({
           id: `rec-${occ.key}`,
           customer: property.address,
@@ -252,7 +252,7 @@ function DashboardPage() {
           startHour,
           endHour,
           status: "turn",
-          cleaner,
+          cleaningCompany,
           label: `${formatHourLabel(startHour)} · Recurring Turn`,
           recurring: true,
           cadence: occ.cadenceLabel,
@@ -278,8 +278,8 @@ function DashboardPage() {
       for (const occ of occurrences) {
         if (skipped.includes(occ.key)) continue;
         if (occ.date > horizon) continue;
-        const cleaner = occurrenceCleaners[occ.key] ?? occ.cleaner;
-        if (!cleaner) count++;
+        const cleaningCompany = occurrenceCleaners[occ.key] ?? occ.cleaningCompany;
+        if (!cleaningCompany) count++;
       }
     }
     return count;
@@ -402,24 +402,23 @@ function DashboardPage() {
               </section>
 
               {unassignedWeek > 0 && (
-                <a
-                  href="#bookings-timeline"
+                <Link
+                  to="/services"
                   className="flex items-start gap-3 rounded-2xl border border-warning/40 bg-warning-soft px-5 py-4 shadow-card transition-colors hover:brightness-[0.98]"
                 >
                   <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold text-foreground">
-                      You have {unassignedWeek} unassigned recurring turn
-                      {unassignedWeek === 1 ? "" : "s"} this week.
+                      You have {unassignedWeek} turn{unassignedWeek === 1 ? "" : "s"} with no cleaning company linked this week.
                     </p>
                     <p className="text-[13px] text-muted-foreground">
-                      Assign cleaners to avoid gaps.
+                      Link a cleaning company so they're notified of each turn.
                     </p>
                   </div>
                   <span className="self-center text-sm font-semibold text-foreground/80">
-                    Review turns →
+                    Review in Service Settings →
                   </span>
-                </a>
+                </Link>
               )}
 
               {/* Section header for timeline */}

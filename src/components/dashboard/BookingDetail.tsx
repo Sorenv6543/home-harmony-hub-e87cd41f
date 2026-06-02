@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import type { Booking } from "./Timeline";
 import {
   Calendar,
-  User,
+  Building2,
   MapPin,
   FileText,
   X,
@@ -12,9 +13,8 @@ import {
   AlertTriangle,
   CalendarOff,
   Trash2,
-  ChevronDown,
 } from "lucide-react";
-import { store, CLEANERS } from "@/lib/store";
+import { store } from "@/lib/store";
 import { toast } from "sonner";
 
 export function BookingDetail({
@@ -25,8 +25,7 @@ export function BookingDetail({
   onClose: () => void;
 }) {
   const [open, setOpen] = useState(false);
-  const [showPicker, setShowPicker] = useState(false);
-  const [localCleaner, setLocalCleaner] = useState<string | undefined>(booking.cleaner);
+  const [localCompany, setLocalCompany] = useState<string | undefined>(booking.cleaningCompany);
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setOpen(true));
@@ -35,9 +34,8 @@ export function BookingDetail({
 
   useEffect(() => {
     setOpen(true);
-    setLocalCleaner(booking.cleaner);
-    setShowPicker(false);
-  }, [booking.id, booking.cleaner]);
+    setLocalCompany(booking.cleaningCompany);
+  }, [booking.id, booking.cleaningCompany]);
 
   const handleClose = () => {
     setOpen(false);
@@ -54,16 +52,7 @@ export function BookingDetail({
   }, []);
 
   const isRecurring = !!booking.recurring;
-  const unassigned = isRecurring && !localCleaner;
-
-  const assignCleaner = (name: string) => {
-    setLocalCleaner(name);
-    setShowPicker(false);
-    if (booking.occurrenceKey) {
-      store.setOccurrenceCleaner(booking.occurrenceKey, name);
-    }
-    toast.success(`${name} assigned to this turn.`);
-  };
+  const notLinked = !localCompany;
 
   const skipOccurrence = () => {
     if (!booking.occurrenceKey) return;
@@ -119,12 +108,21 @@ export function BookingDetail({
         </div>
 
         <div className="flex-1 overflow-y-auto">
-          {unassigned && (
-            <div className="mx-6 mt-5 flex items-start gap-3 rounded-xl border border-danger/30 bg-danger-soft px-4 py-3">
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-danger" />
-              <p className="text-[13px] font-medium text-foreground">
-                No cleaner assigned — assign one before this turn.
-              </p>
+          {notLinked && (
+            <div className="mx-6 mt-5 flex items-start gap-3 rounded-xl border border-warning/40 bg-warning-soft px-4 py-3">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
+              <div className="min-w-0">
+                <p className="text-[13px] font-medium text-foreground">
+                  No cleaning company linked — add one in Service Settings.
+                </p>
+                <Link
+                  to="/services"
+                  onClick={handleClose}
+                  className="mt-1 inline-block text-[12px] font-semibold text-foreground/80 hover:text-foreground"
+                >
+                  Add cleaning company →
+                </Link>
+              </div>
             </div>
           )}
 
@@ -141,43 +139,18 @@ export function BookingDetail({
               </DetailRow>
             )}
 
-            <DetailRow icon={User} label="Cleaner">
-              <div className="relative inline-block">
-                {localCleaner ? (
-                  <span className="text-foreground">{localCleaner}</span>
-                ) : (
-                  <span className="text-danger font-semibold">Unassigned</span>
-                )}
-                {isRecurring && (
-                  <>
-                    <button
-                      onClick={() => setShowPicker((v) => !v)}
-                      className="ml-2 inline-flex items-center gap-1 rounded-md border border-border bg-surface px-2 py-0.5 text-[11px] font-semibold text-foreground hover:bg-surface-muted"
-                    >
-                      {localCleaner ? "Change" : "Assign cleaner"}
-                      <ChevronDown className="h-3 w-3" />
-                    </button>
-                    {showPicker && (
-                      <div className="absolute z-10 mt-1 w-48 overflow-hidden rounded-lg border border-border bg-surface shadow-lift">
-                        {CLEANERS.map((c) => (
-                          <button
-                            key={c}
-                            onClick={() => assignCleaner(c)}
-                            className="block w-full px-3 py-2 text-left text-sm text-foreground hover:bg-surface-muted"
-                          >
-                            {c}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </>
-                )}
-                {!isRecurring && !localCleaner && (
-                  <button className="ml-1 text-primary font-medium hover:underline">
-                    + Assign cleaner
-                  </button>
-                )}
-              </div>
+            <DetailRow icon={Building2} label="Cleaning company">
+              {localCompany ? (
+                <span className="text-foreground">{localCompany}</span>
+              ) : (
+                <Link
+                  to="/services"
+                  onClick={handleClose}
+                  className="text-primary font-semibold hover:underline"
+                >
+                  + Link a cleaning company
+                </Link>
+              )}
             </DetailRow>
 
             <DetailRow icon={MapPin} label="Address">

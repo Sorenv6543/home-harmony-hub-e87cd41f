@@ -5,7 +5,7 @@ import {
   ArrowLeft,
   Save,
   Clock,
-  Users,
+  Building2,
   Calendar as CalendarIcon,
   ChevronDown,
 } from "lucide-react";
@@ -15,7 +15,6 @@ import {
   useStore,
   store,
   DOW_LABELS,
-  CLEANERS,
   type Cadence,
   type Dow,
   type RecurringSchedule,
@@ -190,7 +189,7 @@ function ScheduleCard({
   const [days, setDays] = useState<Dow[]>(existing?.daysOfWeek ?? [2]); // Wed default
   const [time, setTime] = useState(existing?.time ?? "10:00");
   const [duration, setDuration] = useState(existing?.durationMin ?? propertyDuration ?? 120);
-  const [cleaner, setCleaner] = useState(existing?.cleaner ?? "");
+  const [cleaningCompany, setCleaningCompany] = useState(existing?.cleaningCompany ?? "");
   const [startDate, setStartDate] = useState(
     existing?.startDate ?? nextOccurrenceISO(existing?.daysOfWeek ?? [2]),
   );
@@ -213,7 +212,7 @@ function ScheduleCard({
       daysOfWeek: days,
       time,
       durationMin: Number(duration) || 120,
-      cleaner: cleaner || undefined,
+      cleaningCompany: cleaningCompany.trim() || undefined,
       startDate,
       endDate: noEnd ? undefined : endDate || undefined,
     };
@@ -230,7 +229,7 @@ function ScheduleCard({
       setDays(existing.daysOfWeek);
       setTime(existing.time);
       setDuration(existing.durationMin);
-      setCleaner(existing.cleaner ?? "");
+      setCleaningCompany(existing.cleaningCompany ?? "");
       setStartDate(existing.startDate);
       setNoEnd(!existing.endDate);
       setEndDate(existing.endDate ?? "");
@@ -321,17 +320,17 @@ function ScheduleCard({
                 className={inputCls}
               />
             </Group>
-            <Group label="Auto-assign cleaner" icon={Users}>
-              <select
-                value={cleaner}
-                onChange={(e) => setCleaner(e.target.value)}
+            <Group label="Notify cleaning company" icon={Building2}>
+              <input
+                type="text"
+                value={cleaningCompany}
+                onChange={(e) => setCleaningCompany(e.target.value)}
+                placeholder="e.g. Bright & Clean Co."
                 className={inputCls}
-              >
-                <option value="">No preference</option>
-                {CLEANERS.map((c) => (
-                  <option key={c}>{c}</option>
-                ))}
-              </select>
+              />
+              <p className="mt-1.5 text-[11px] text-muted-foreground">
+                Your cleaning company will be notified of each scheduled turn.
+              </p>
             </Group>
             <Group label="Start date" icon={CalendarIcon}>
               <input
