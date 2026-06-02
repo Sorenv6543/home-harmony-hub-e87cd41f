@@ -1,6 +1,21 @@
 import { useEffect, useState } from "react";
 import type { Booking } from "./Timeline";
-import { Calendar, User, MapPin, FileText, X, Phone, MessageCircle } from "lucide-react";
+import {
+  Calendar,
+  User,
+  MapPin,
+  FileText,
+  X,
+  Phone,
+  MessageCircle,
+  Repeat,
+  AlertTriangle,
+  CalendarOff,
+  Trash2,
+  ChevronDown,
+} from "lucide-react";
+import { store, CLEANERS } from "@/lib/store";
+import { toast } from "sonner";
 
 export function BookingDetail({
   booking,
@@ -10,24 +25,25 @@ export function BookingDetail({
   onClose: () => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
+  const [localCleaner, setLocalCleaner] = useState<string | undefined>(booking.cleaner);
 
   useEffect(() => {
-    // trigger enter transition on mount
     const id = requestAnimationFrame(() => setOpen(true));
     return () => cancelAnimationFrame(id);
   }, []);
 
-  // ensure re-trigger when booking changes
   useEffect(() => {
     setOpen(true);
-  }, [booking.id]);
+    setLocalCleaner(booking.cleaner);
+    setShowPicker(false);
+  }, [booking.id, booking.cleaner]);
 
   const handleClose = () => {
     setOpen(false);
     window.setTimeout(onClose, 280);
   };
 
-  // close on Escape
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") handleClose();
@@ -37,9 +53,34 @@ export function BookingDetail({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const isRecurring = !!booking.recurring;
+  const unassigned = isRecurring && !localCleaner;
+
+  const assignCleaner = (name: string) => {
+    setLocalCleaner(name);
+    setShowPicker(false);
+    if (booking.occurrenceKey) {
+      store.setOccurrenceCleaner(booking.occurrenceKey, name);
+    }
+    toast.success(`${name} assigned to this turn.`);
+  };
+
+  const skipOccurrence = () => {
+    if (!booking.occurrenceKey) return;
+    store.skipOccurrence(booking.occurrenceKey);
+    toast.success("Occurrence skipped.");
+    handleClose();
+  };
+
+  const cancelSeries = () => {
+    if (!booking.propertyId) return;
+    store.deleteSchedule(booking.propertyId);
+    toast.success("Recurring series cancelled.");
+    handleClose();
+  };
+
   return (
     <div className="fixed inset-0 z-50">
-      {/* Scrim */}
       <div
         onClick={handleClose}
         className={`absolute inset-0 bg-foreground/40 backdrop-blur-[2px] transition-opacity duration-300 ease-out ${
@@ -48,7 +89,6 @@ export function BookingDetail({
         aria-hidden="true"
       />
 
-      {/* Slide-in panel (Vuetify-style navigation drawer) */}
       <aside
         role="dialog"
         aria-modal="true"
@@ -59,8 +99,14 @@ export function BookingDetail({
       >
         <div className="flex items-start justify-between border-b border-border bg-surface-muted/40 px-6 py-4">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              Booking details
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground inline-flex items-center gap-1.5">
+              {isRecurring ? (
+                <>
+                  <Repeat className="h-3 w-3" /> Recurring Turn
+                </>
+              ) : (
+                "Booking details"
+              )}
             </p>
             <h3 className="mt-1 text-lg font-semibold text-foreground">{booking.customer}</h3>
           </div>
@@ -73,17 +119,67 @@ export function BookingDetail({
         </div>
 
         <div className="flex-1 overflow-y-auto">
+          {unassigned && (
+            <div className="mx-6 mt-5 flex items-start gap-3 rounded-xl border border-danger/30 bg-danger-soft px-4 py-3">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-danger" />
+              <p className="text-[13px] font-medium text-foreground">
+                No cleaner assigned — assign one before this turn.
+              </p>
+            </div>
+          )}
+
           <div className="grid gap-5 px-6 py-5">
             <DetailRow icon={Calendar} label="Date & time">
-              Today · {formatHour(booking.startHour)} – {formatHour(booking.endHour)}
+              {booking.occurrenceDateISO
+                ? formatDateISO(booking.occurrenceDateISO)
+                : "Today"} · {formatHour(booking.startHour)} – {formatHour(booking.endHour)}
             </DetailRow>
+
+            {isRecurring && booking.cadence && (
+              <DetailRow icon={Repeat} label="Cadence">
+                {booking.cadence}
+              </DetailRow>
+            )}
+
             <DetailRow icon={User} label="Cleaner">
-              {booking.cleaner ?? (
-                <button className="text-primary font-medium hover:underline">
-                  + Assign cleaner
-                </button>
-              )}
+              <div className="relative inline-block">
+                {localCleaner ? (
+                  <span className="text-foreground">{localCleaner}</span>
+                ) : (
+                  <span className="text-danger font-semibold">Unassigned</span>
+                )}
+                {isRecurring && (
+                  <>
+                    <button
+                      onClick={() => setShowPicker((v) => !v)}
+                      className="ml-2 inline-flex items-center gap-1 rounded-md border border-border bg-surface px-2 py-0.5 text-[11px] font-semibold text-foreground hover:bg-surface-muted"
+                    >
+                      {localCleaner ? "Change" : "Assign cleaner"}
+                      <ChevronDown className="h-3 w-3" />
+                    </button>
+                    {showPicker && (
+                      <div className="absolute z-10 mt-1 w-48 overflow-hidden rounded-lg border border-border bg-surface shadow-lift">
+                        {CLEANERS.map((c) => (
+                          <button
+                            key={c}
+                            onClick={() => assignCleaner(c)}
+                            className="block w-full px-3 py-2 text-left text-sm text-foreground hover:bg-surface-muted"
+                          >
+                            {c}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+                {!isRecurring && !localCleaner && (
+                  <button className="ml-1 text-primary font-medium hover:underline">
+                    + Assign cleaner
+                  </button>
+                )}
+              </div>
             </DetailRow>
+
             <DetailRow icon={MapPin} label="Address">
               {booking.address}
             </DetailRow>
@@ -92,30 +188,56 @@ export function BookingDetail({
             </DetailRow>
           </div>
 
-          <div className="border-t border-border bg-surface-muted/30 px-6 py-3 text-xs text-muted-foreground">
-            <span className="font-semibold text-foreground">Notes: </span>
-            Gate code 4821. Two friendly golden retrievers in the backyard. Please pay extra
-            attention to the master bathroom mirrors.
-          </div>
+          {!isRecurring && (
+            <div className="border-t border-border bg-surface-muted/30 px-6 py-3 text-xs text-muted-foreground">
+              <span className="font-semibold text-foreground">Notes: </span>
+              Gate code 4821. Two friendly golden retrievers in the backyard. Please pay extra
+              attention to the master bathroom mirrors.
+            </div>
+          )}
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border px-6 py-4">
-          <div className="flex gap-2">
-            <button className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-medium text-foreground hover:bg-surface-muted">
-              <Phone className="h-3.5 w-3.5" /> Call
-            </button>
-            <button className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-medium text-foreground hover:bg-surface-muted">
-              <MessageCircle className="h-3.5 w-3.5" /> Message
-            </button>
-          </div>
-          <div className="flex gap-2">
-            <button className="rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground">
-              Reschedule
-            </button>
-            <button className="rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:opacity-90">
-              Confirm booking
-            </button>
-          </div>
+          {isRecurring ? (
+            <>
+              <div className="flex gap-2">
+                <button
+                  onClick={skipOccurrence}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-medium text-foreground hover:bg-surface-muted"
+                >
+                  <CalendarOff className="h-3.5 w-3.5" /> Skip this
+                </button>
+                <button
+                  onClick={cancelSeries}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-danger/30 bg-danger-soft px-3 py-1.5 text-xs font-medium text-danger hover:brightness-95"
+                >
+                  <Trash2 className="h-3.5 w-3.5" /> Cancel series
+                </button>
+              </div>
+              <button className="rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:opacity-90">
+                Edit
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="flex gap-2">
+                <button className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-medium text-foreground hover:bg-surface-muted">
+                  <Phone className="h-3.5 w-3.5" /> Call
+                </button>
+                <button className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-medium text-foreground hover:bg-surface-muted">
+                  <MessageCircle className="h-3.5 w-3.5" /> Message
+                </button>
+              </div>
+              <div className="flex gap-2">
+                <button className="rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground">
+                  Reschedule
+                </button>
+                <button className="rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:opacity-90">
+                  Confirm booking
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </aside>
     </div>
@@ -140,7 +262,7 @@ function DetailRow({
         <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
           {label}
         </p>
-        <p className="mt-0.5 text-sm text-foreground">{children}</p>
+        <div className="mt-0.5 text-sm text-foreground">{children}</div>
       </div>
     </div>
   );
@@ -152,4 +274,9 @@ function formatHour(h: number) {
   const period = hr < 12 ? "AM" : "PM";
   const display = hr % 12 === 0 ? 12 : hr % 12;
   return `${display}:${m.toString().padStart(2, "0")} ${period}`;
+}
+
+function formatDateISO(iso: string) {
+  const d = new Date(iso);
+  return d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
 }
