@@ -122,13 +122,7 @@ export function BookingDetail({
               {localCompany ? (
                 <span className="text-foreground">{localCompany}</span>
               ) : (
-                <Link
-                  to="/services"
-                  onClick={handleClose}
-                  className="text-primary font-semibold hover:underline"
-                >
-                  + Link a cleaning company
-                </Link>
+                <span className="text-muted-foreground">—</span>
               )}
             </DetailRow>
 
