@@ -266,24 +266,6 @@ function DashboardPage() {
     return out;
   }, [schedules, properties, skipped, occurrenceCleaners]);
 
-  // Unassigned recurring turns within next 7 days (for alert + attention badge).
-  const unassignedWeek = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const horizon = new Date(today);
-    horizon.setDate(horizon.getDate() + 7);
-    let count = 0;
-    for (const schedule of schedules) {
-      const occurrences = generateOccurrences(schedule, 1, today);
-      for (const occ of occurrences) {
-        if (skipped.includes(occ.key)) continue;
-        if (occ.date > horizon) continue;
-        const cleaningCompany = occurrenceCleaners[occ.key] ?? occ.cleaningCompany;
-        if (!cleaningCompany) count++;
-      }
-    }
-    return count;
-  }, [schedules, skipped, occurrenceCleaners]);
 
   const baseBookings = showEmpty ? [] : bookings;
   const activeBookings = useMemo(
@@ -294,7 +276,7 @@ function DashboardPage() {
   const selected = activeBookings.find((b) => b.id === selectedId);
 
   const urgentCount = baseBookings.filter((b) => b.status === "urgent").length;
-  const attentionCount = urgentCount + unassignedWeek;
+  const attentionCount = urgentCount;
 
   return (
     <div className="flex min-h-screen w-full bg-background">
@@ -401,25 +383,6 @@ function DashboardPage() {
                 </div>
               </section>
 
-              {unassignedWeek > 0 && (
-                <Link
-                  to="/services"
-                  className="flex items-start gap-3 rounded-2xl border border-warning/40 bg-warning-soft px-5 py-4 shadow-card transition-colors hover:brightness-[0.98]"
-                >
-                  <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-foreground">
-                      You have {unassignedWeek} turn{unassignedWeek === 1 ? "" : "s"} with no cleaning company linked this week.
-                    </p>
-                    <p className="text-[13px] text-muted-foreground">
-                      Link a cleaning company so they're notified of each turn.
-                    </p>
-                  </div>
-                  <span className="self-center text-sm font-semibold text-foreground/80">
-                    Review in Service Settings →
-                  </span>
-                </Link>
-              )}
 
               {/* Section header for timeline */}
               {/* Section header for timeline */}
