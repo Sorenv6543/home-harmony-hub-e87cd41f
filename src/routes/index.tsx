@@ -6,7 +6,8 @@ import { StatCard } from "@/components/dashboard/StatCard";
 import { Timeline, Legend, type Booking } from "@/components/dashboard/Timeline";
 import { BookingsTable } from "@/components/dashboard/BookingsTable";
 import { BookingDetail } from "@/components/dashboard/BookingDetail";
-import { EmptyState } from "@/components/dashboard/EmptyState";
+import { EmptyState, type ChecklistState } from "@/components/dashboard/EmptyState";
+import { AddPropertyModal, type Property } from "@/components/dashboard/AddPropertyModal";
 
 
 
@@ -201,7 +202,14 @@ const bookings: Booking[] = [
 
 function DashboardPage() {
   const [selectedId, setSelectedId] = useState<string | undefined>("2");
-  const [showEmpty, setShowEmpty] = useState(false);
+  const [showEmpty, setShowEmpty] = useState(true);
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [checklist, setChecklist] = useState<ChecklistState>({
+    property: false,
+    booking: false,
+    turn: false,
+  });
   const selected = bookings.find((b) => b.id === selectedId);
   const activeBookings = showEmpty ? [] : bookings;
 
@@ -249,6 +257,7 @@ function DashboardPage() {
               <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-danger" />
             </button>
             <button
+              onClick={() => setModalOpen(true)}
               className="inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-sm transition-transform hover:-translate-y-0.5"
               style={{ backgroundImage: "var(--gradient-primary)" }}
             >
@@ -262,7 +271,12 @@ function DashboardPage() {
 
         <main className="flex-1 overflow-y-auto px-4 md:px-8 py-6 md:py-8 space-y-7">
           {showEmpty ? (
-            <EmptyState onCreate={() => setShowEmpty(false)} />
+            <EmptyState
+              onAddProperty={() => setModalOpen(true)}
+              onPreviewSample={() => setShowEmpty(false)}
+              completed={checklist}
+              properties={properties}
+            />
           ) : (
             <>
               {/* Hero greeting band */}
@@ -323,6 +337,16 @@ function DashboardPage() {
           )}
         </main>
       </div>
+
+      <AddPropertyModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        onCreate={(p) => {
+          setProperties((arr) => [...arr, p]);
+          setChecklist((c) => ({ ...c, property: true }));
+          setShowEmpty(true);
+        }}
+      />
     </div>
   );
 }

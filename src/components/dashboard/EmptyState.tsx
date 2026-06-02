@@ -1,99 +1,181 @@
-import { CalendarPlus, Sparkles, Users, ShieldCheck } from "lucide-react";
+import { Check, Sparkles, Home, MapPin, Bed, Bath } from "lucide-react";
+import type { Property } from "./AddPropertyModal";
 
-export function EmptyState({ onCreate }: { onCreate?: () => void }) {
+export type ChecklistState = {
+  property: boolean;
+  booking: boolean;
+  turn: boolean;
+};
+
+const STEPS = [
+  {
+    key: "property" as const,
+    title: "Add your first property",
+    subtitle: "Tell us about the place you rent: address, bedrooms, and a few details",
+  },
+  {
+    key: "booking" as const,
+    title: "Create a booking",
+    subtitle: "Add a guest stay or import from your calendar",
+  },
+  {
+    key: "turn" as const,
+    title: "Assign a turn",
+    subtitle: "Schedule a cleaning between stays",
+  },
+];
+
+export function EmptyState({
+  onAddProperty,
+  onPreviewSample,
+  completed,
+  properties = [],
+}: {
+  onAddProperty: () => void;
+  onPreviewSample: () => void;
+  completed: ChecklistState;
+  properties?: Property[];
+}) {
+  const done = Object.values(completed).filter(Boolean).length;
+
   return (
-    <section
-      className="relative overflow-hidden rounded-3xl border border-border bg-surface p-8 md:p-12 shadow-card"
-      style={{ backgroundImage: "var(--gradient-warm)" }}
-    >
-      {/* Soft decorative blobs */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-24 -right-20 h-72 w-72 rounded-full opacity-60 blur-3xl"
-        style={{ background: "radial-gradient(circle, var(--color-primary) 0%, transparent 70%)", opacity: 0.12 }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -bottom-24 -left-16 h-72 w-72 rounded-full opacity-50 blur-3xl"
-        style={{ background: "radial-gradient(circle, var(--color-warning) 0%, transparent 70%)", opacity: 0.1 }}
-      />
+    <div className="grid gap-6 lg:grid-cols-[1.05fr_1fr]">
+      {/* Checklist card */}
+      <section className="relative overflow-hidden rounded-3xl border border-border bg-surface p-7 md:p-9 shadow-lift">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-24 -right-20 h-60 w-60 rounded-full blur-3xl"
+          style={{ background: "radial-gradient(circle, var(--color-warning) 0%, transparent 70%)", opacity: 0.12 }}
+        />
 
-      <div className="relative grid gap-10 md:grid-cols-[1.1fr_1fr] md:items-center">
-        <div>
-          <span className="inline-flex items-center gap-2 rounded-full bg-surface/80 px-3 py-1 text-xs font-semibold text-primary backdrop-blur">
-            <Sparkles className="h-3.5 w-3.5" />
-            Welcome to Claro
+        <div className="relative">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-warning-soft px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-foreground/70">
+            <Sparkles className="h-3 w-3" /> Welcome to Claro
           </span>
-          <h2 className="mt-4 text-3xl md:text-4xl font-semibold tracking-tight text-foreground leading-[1.1]">
-            Your calendar is calm —
-            <br />
-            <span className="text-primary">let’s book your first job.</span>
+          <h2 className="mt-3 text-2xl md:text-[28px] font-semibold tracking-tight text-foreground leading-tight">
+            Get set up in 3 steps
           </h2>
-          <p className="mt-4 max-w-md text-[15px] leading-relaxed text-muted-foreground">
-            When bookings come in, they’ll appear here on a clear, friendly
-            timeline. Add your first one in under a minute — no setup required.
+          <p className="mt-1.5 text-sm text-muted-foreground">
+            {done === 0
+              ? "A quick guided setup — usually under 2 minutes."
+              : `${done} of 3 complete — nice work.`}
           </p>
 
-          <div className="mt-7 flex flex-wrap items-center gap-3">
+          <ol className="mt-6 space-y-3">
+            {STEPS.map((step, i) => {
+              const isDone = completed[step.key];
+              return (
+                <li
+                  key={step.key}
+                  className={`flex items-start gap-4 rounded-2xl border p-4 transition-colors ${
+                    isDone
+                      ? "border-success/30 bg-success-soft/40"
+                      : "border-border bg-surface-muted/40"
+                  }`}
+                >
+                  <span
+                    className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-xs font-semibold ${
+                      isDone
+                        ? "border-success bg-success text-primary-foreground"
+                        : "border-border bg-surface text-muted-foreground"
+                    }`}
+                    aria-hidden
+                  >
+                    {isDone ? <Check className="h-3.5 w-3.5" /> : i + 1}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p
+                      className={`text-[15px] font-semibold leading-tight ${
+                        isDone ? "text-foreground/70 line-through" : "text-foreground"
+                      }`}
+                    >
+                      {step.title}
+                    </p>
+                    <p className="mt-1 text-[13px] leading-snug text-muted-foreground">
+                      {step.subtitle}
+                    </p>
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+
+          <div className="mt-7 flex flex-wrap items-center gap-4">
             <button
-              onClick={onCreate}
+              onClick={onAddProperty}
               className="inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold text-primary-foreground shadow-lift transition-transform hover:-translate-y-0.5"
               style={{ backgroundImage: "var(--gradient-primary)" }}
             >
-              <CalendarPlus className="h-4 w-4" />
-              Create your first booking
+              Add your first property
             </button>
-            <button className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-5 py-3 text-sm font-semibold text-foreground hover:bg-surface-muted">
-              Take a quick tour
+            <button
+              onClick={onPreviewSample}
+              className="text-sm font-semibold text-foreground/70 underline-offset-4 hover:text-foreground hover:underline"
+            >
+              Preview with sample data →
             </button>
           </div>
+        </div>
+      </section>
 
-          <ul className="mt-7 grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
-            <Reassurance icon={ShieldCheck} text="No card required" />
-            <Reassurance icon={Users} text="Invite teammates anytime" />
-            <Reassurance icon={Sparkles} text="Friendly support 7 days" />
-          </ul>
+      {/* Right panel: properties list or illustration */}
+      <section className="rounded-3xl border border-border bg-surface p-6 md:p-7 shadow-card">
+        <div className="flex items-center justify-between">
+          <h3 className="text-base font-semibold text-foreground">Your properties</h3>
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            {properties.length} total
+          </span>
         </div>
 
-        {/* Preview illustration of an empty timeline */}
-        <div className="relative">
-          <div className="rounded-2xl border border-border bg-surface p-5 shadow-lift">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                Today
-              </p>
-              <span className="text-[11px] font-semibold text-muted-foreground">
-                Tue · Oct 24
-              </span>
-            </div>
-            <div className="mt-4 space-y-3">
-              {[0, 1, 2].map((i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <div className="w-14 shrink-0 text-[11px] font-semibold text-muted-foreground">
-                    {9 + i * 3}:00
-                  </div>
-                  <div className="h-9 flex-1 rounded-lg border border-dashed border-border bg-surface-muted/60" />
+        {properties.length === 0 ? (
+          <div className="mt-5 flex h-[280px] flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-surface-muted/40 px-6 text-center">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-warning-soft text-foreground/70">
+              <Home className="h-5 w-5" />
+            </span>
+            <p className="mt-4 text-sm font-semibold text-foreground">
+              No properties yet
+            </p>
+            <p className="mt-1 max-w-xs text-[13px] text-muted-foreground">
+              Add your first place and we'll bring its calendar to life right here.
+            </p>
+          </div>
+        ) : (
+          <ul className="mt-5 space-y-3">
+            {properties.map((p) => (
+              <li
+                key={p.id}
+                className="flex items-center gap-4 rounded-2xl border border-border bg-surface-muted/30 p-4"
+              >
+                <span
+                  className="h-10 w-10 shrink-0 rounded-xl"
+                  style={{ backgroundColor: p.color }}
+                  aria-hidden
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-foreground">
+                    {p.address}
+                    {p.unit ? `, ${p.unit}` : ""}
+                  </p>
+                  <p className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-muted-foreground">
+                    <span className="inline-flex items-center gap-1">
+                      <MapPin className="h-3 w-3" /> {p.city}, {p.state}
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <Bed className="h-3 w-3" /> {p.bedrooms || 0}
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <Bath className="h-3 w-3" /> {p.bathrooms || 0}
+                    </span>
+                  </p>
                 </div>
-              ))}
-            </div>
-            <div className="mt-5 flex items-center gap-2 rounded-xl bg-primary/5 px-3 py-2 text-xs text-primary">
-              <Sparkles className="h-3.5 w-3.5" />
-              Your first booking will land here.
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Reassurance({ icon: Icon, text }: { icon: typeof Sparkles; text: string }) {
-  return (
-    <li className="flex items-center gap-2">
-      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-surface/80 text-primary">
-        <Icon className="h-3.5 w-3.5" />
-      </span>
-      <span className="font-medium text-foreground/80">{text}</span>
-    </li>
+                <span className="rounded-full bg-surface px-2.5 py-1 text-[11px] font-semibold text-foreground/70">
+                  {p.propertyType}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    </div>
   );
 }
