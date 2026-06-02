@@ -23,16 +23,36 @@ export type RecurringSchedule = {
   endDate?: string; // ISO yyyy-mm-dd
 };
 
+export type CustomBookingType = "guest" | "owner" | "maintenance";
+export type CustomBooking = {
+  id: string;
+  propertyId: string;
+  type: CustomBookingType;
+  guestName?: string;
+  checkInISO: string; // "YYYY-MM-DDTHH:mm"
+  checkOutISO: string;
+  notes?: string;
+};
+
 type State = {
   properties: Property[];
   schedules: RecurringSchedule[];
   // overrides per generated occurrence (skipped, reassigned)
   skipped: string[]; // keys like "scheduleId:yyyy-mm-dd"
   occurrenceCleaners: Record<string, string>; // key -> cleaner override
+  customBookings: CustomBooking[];
+  newBookingOpen: boolean;
 };
 
 const KEY = "claro.store.v1";
-const empty: State = { properties: [], schedules: [], skipped: [], occurrenceCleaners: {} };
+const empty: State = {
+  properties: [],
+  schedules: [],
+  skipped: [],
+  occurrenceCleaners: {},
+  customBookings: [],
+  newBookingOpen: false,
+};
 
 let state: State = load();
 const listeners = new Set<() => void>();
@@ -85,6 +105,15 @@ export const store = {
   },
   setOccurrenceCleaner(key: string, cleaner: string) {
     set({ occurrenceCleaners: { ...state.occurrenceCleaners, [key]: cleaner } });
+  },
+  addCustomBooking(b: CustomBooking) {
+    set({ customBookings: [...state.customBookings, b] });
+  },
+  openNewBooking() {
+    set({ newBookingOpen: true });
+  },
+  closeNewBooking() {
+    set({ newBookingOpen: false });
   },
 };
 

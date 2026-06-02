@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Bell, Search, Plus, CalendarCheck, Clock, Sun } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { StatCard } from "@/components/dashboard/StatCard";
@@ -208,12 +208,18 @@ function DashboardPage() {
   const schedules = useStore((s) => s.schedules);
   const skipped = useStore((s) => s.skipped);
   const occurrenceCleaners = useStore((s) => s.occurrenceCleaners);
+  const customBookings = useStore((s) => s.customBookings);
   const [modalOpen, setModalOpen] = useState(false);
   const [checklist, setChecklist] = useState<ChecklistState>({
     property: false,
     booking: false,
     turn: false,
   });
+
+  // When a custom booking is added, exit empty mode so it shows on the timeline.
+  useEffect(() => {
+    if (customBookings.length > 0) setShowEmpty(false);
+  }, [customBookings.length]);
 
   // Generate recurring turns and merge into the active timeline.
   const recurringBookings = useMemo<Booking[]>(() => {
@@ -267,11 +273,100 @@ function DashboardPage() {
   }, [schedules, properties, skipped, occurrenceCleaners]);
 
 
+  // Convert user-created bookings (guest stay / owner block / maintenance) into timeline pills.
+  const customTimelineBookings = useMemo<Booking[]>(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const dayFor = (d: Date): Booking["day"] | undefined => {
+      const offset = Math.round((d.getTime() - today.getTime()) / 86400000);
+      return offset === 0 ? "today" : offset === 1 ? "tomorrow" : offset === 2 ? "wed" : offset === 3 ? "thu" : undefined;
+    };
+    const hourOf = (d: Date) => d.getHours() + d.getMinutes() / 60;
+    const out: Booking[] = [];
+    for (const cb of customBookings) {
+      const property = properties.find((p) => p.id === cb.propertyId);
+      if (!property) continue;
+      const inDT = new Date(cb.checkInISO);
+      const outDT = new Date(cb.checkOutISO);
+      const city = `${property.city}, ${property.state}`;
+
+      if (cb.type === "guest") {
+        const inDay = dayFor(new Date(inDT.getFullYear(), inDT.getMonth(), inDT.getDate()));
+        if (inDay) {
+          const sh = Math.max(8, Math.min(20, hourOf(inDT)));
+          out.push({
+            id: `cb-${cb.id}-in`,
+            customer: cb.guestName || "Guest",
+            address: property.address,
+            city,
+            service: `Guest stay · ${property.propertyType}`,
+            day: inDay,
+            startHour: sh,
+            endHour: Math.min(20, sh + 1.5),
+            status: "check-in",
+            label: `${formatHourLabel(sh)} · Check-in`,
+          });
+        }
+        const outDay = dayFor(new Date(outDT.getFullYear(), outDT.getMonth(), outDT.getDate()));
+        if (outDay) {
+          const eh = Math.max(8, Math.min(20, hourOf(outDT)));
+          out.push({
+            id: `cb-${cb.id}-out`,
+            customer: cb.guestName || "Guest",
+            address: property.address,
+            city,
+            service: `Guest stay · ${property.propertyType}`,
+            day: outDay,
+            startHour: Math.max(8, eh - 1.5),
+            endHour: eh,
+            status: "check-out",
+            label: `${formatHourLabel(eh)} · Check-out`,
+          });
+        }
+      } else {
+        // Owner block (turn / amber) or Maintenance (urgent / red): one pill per day in range.
+        const status: Booking["status"] = cb.type === "owner" ? "turn" : "urgent";
+        const labelTxt = cb.type === "owner" ? "Owner block" : "Maintenance";
+        const cursor = new Date(inDT.getFullYear(), inDT.getMonth(), inDT.getDate());
+        const lastDay = new Date(outDT.getFullYear(), outDT.getMonth(), outDT.getDate());
+        let i = 0;
+        while (cursor.getTime() <= lastDay.getTime() && i < 8) {
+          const day = dayFor(cursor);
+          if (day) {
+            const sameAsIn = cursor.getTime() === new Date(inDT.getFullYear(), inDT.getMonth(), inDT.getDate()).getTime();
+            const sameAsOut = cursor.getTime() === lastDay.getTime();
+            const sh = sameAsIn ? Math.max(8, Math.min(20, hourOf(inDT))) : 8;
+            const eh = sameAsOut ? Math.max(8, Math.min(20, hourOf(outDT))) : 20;
+            if (eh > sh) {
+              out.push({
+                id: `cb-${cb.id}-${i}`,
+                customer: labelTxt,
+                address: property.address,
+                city,
+                service: `${labelTxt} · ${property.propertyType}`,
+                day,
+                startHour: sh,
+                endHour: eh,
+                status,
+                label: `${labelTxt}`,
+              });
+            }
+          }
+          cursor.setDate(cursor.getDate() + 1);
+          i++;
+        }
+      }
+    }
+    return out;
+  }, [customBookings, properties]);
+
   const baseBookings = showEmpty ? [] : bookings;
   const activeBookings = useMemo(
-    () => [...baseBookings, ...recurringBookings],
-    [baseBookings, recurringBookings],
+    () => [...baseBookings, ...recurringBookings, ...customTimelineBookings],
+    [baseBookings, recurringBookings, customTimelineBookings],
   );
+
+
 
   const selected = activeBookings.find((b) => b.id === selectedId);
 
@@ -322,7 +417,7 @@ function DashboardPage() {
               <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-danger" />
             </button>
             <button
-              onClick={() => setModalOpen(true)}
+              onClick={() => store.openNewBooking()}
               className="inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-sm transition-transform hover:-translate-y-0.5"
               style={{ backgroundImage: "var(--gradient-primary)" }}
             >

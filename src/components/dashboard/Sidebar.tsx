@@ -12,6 +12,7 @@ import {
   ClipboardList,
   Sparkle,
 } from "lucide-react";
+import { store } from "@/lib/store";
 
 const dashboardItems = [
   { label: "Booking Dashboard", to: "/", icon: LayoutGrid },
@@ -102,7 +103,15 @@ function NavGroup({
           );
           return (
             <li key={item.to}>
-              {routable ? (
+              {item.label === "New Booking" ? (
+                <button
+                  type="button"
+                  onClick={() => store.openNewBooking()}
+                  className={`${className} w-full text-left`}
+                >
+                  {inner}
+                </button>
+              ) : routable ? (
                 <Link to={item.to} className={className}>
                   {inner}
                 </Link>
