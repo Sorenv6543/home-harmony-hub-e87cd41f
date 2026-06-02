@@ -337,6 +337,16 @@ function DashboardPage() {
           )}
         </main>
       </div>
+
+      <AddPropertyModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        onCreate={(p) => {
+          setProperties((arr) => [...arr, p]);
+          setChecklist((c) => ({ ...c, property: true }));
+          setShowEmpty(true);
+        }}
+      />
     </div>
   );
 }
