@@ -168,13 +168,13 @@ export function AddPropertyModal({
       open={open}
       onOpenChange={(o) => {
         onOpenChange(o);
-        if (!o) reset();
+        if (!o && !isEdit) reset();
       }}
     >
       <DialogContent className="max-w-3xl max-h-[92vh] overflow-y-auto p-0 gap-0 rounded-2xl">
         <div className="px-7 pt-7 pb-5 border-b border-border">
           <DialogTitle className="text-xl font-semibold tracking-tight">
-            Add a new property
+            {isEdit ? "Edit property" : "Add a new property"}
           </DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">
             Step {step + 1} of 3 — {STEP_LABELS[step].title}
