@@ -47,7 +47,7 @@ const bookings: Booking[] = [
     startHour: 15,
     endHour: 16.5,
     status: "check-in",
-    cleaner: "Maria W.",
+    cleaningCompany: "Bright & Clean Co.",
     label: "3:00 PM · Check-in",
   },
   {
@@ -60,7 +60,7 @@ const bookings: Booking[] = [
     startHour: 8.5,
     endHour: 10,
     status: "check-in",
-    cleaner: "Jordan S.",
+    cleaningCompany: "Sparkle Pros",
     label: "8:30 AM · Check-in",
   },
   {
@@ -85,7 +85,7 @@ const bookings: Booking[] = [
     startHour: 16,
     endHour: 17.5,
     status: "check-in",
-    cleaner: "Elena R.",
+    cleaningCompany: "Bright & Clean Co.",
     label: "4:00 PM · Check-in",
   },
   {
@@ -134,7 +134,7 @@ const bookings: Booking[] = [
     startHour: 16,
     endHour: 17.5,
     status: "check-in",
-    cleaner: "Maria W.",
+    cleaningCompany: "Bright & Clean Co.",
     label: "4:00 PM · Check-in",
   },
   {
@@ -183,7 +183,7 @@ const bookings: Booking[] = [
     startHour: 8,
     endHour: 9.5,
     status: "check-in",
-    cleaner: "Jordan S.",
+    cleaningCompany: "Sparkle Pros",
     label: "8:00 AM · Check-in",
   },
   {
