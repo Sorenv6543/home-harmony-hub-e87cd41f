@@ -105,7 +105,7 @@ export type Occurrence = {
   date: Date;
   time: string;
   durationMin: number;
-  cleaner?: string;
+  cleaningCompany?: string;
   cadenceLabel: string;
 };
 
@@ -169,7 +169,7 @@ export function generateOccurrences(
           date: new Date(cursor),
           time: schedule.time,
           durationMin: schedule.durationMin,
-          cleaner: schedule.cleaner,
+          cleaningCompany: schedule.cleaningCompany,
           cadenceLabel: cadenceLabel(schedule),
         });
       }
