@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { X, Home, Calendar as CalendarIcon, Clock, User, FileText } from "lucide-react";
+import { Home, Calendar as CalendarIcon, Clock, User, FileText } from "lucide-react";
 import { toast } from "sonner";
 import {
   Sheet,
