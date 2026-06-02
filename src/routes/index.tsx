@@ -271,7 +271,12 @@ function DashboardPage() {
 
         <main className="flex-1 overflow-y-auto px-4 md:px-8 py-6 md:py-8 space-y-7">
           {showEmpty ? (
-            <EmptyState onCreate={() => setShowEmpty(false)} />
+            <EmptyState
+              onAddProperty={() => setModalOpen(true)}
+              onPreviewSample={() => setShowEmpty(false)}
+              completed={checklist}
+              properties={properties}
+            />
           ) : (
             <>
               {/* Hero greeting band */}
