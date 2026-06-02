@@ -502,6 +502,24 @@ function DashboardPage() {
 
               {/* Upcoming list */}
               <BookingsTable bookings={activeBookings} />
+
+              {properties.length > 0 && (
+                <section className="space-y-4">
+                  <div>
+                    <h3 className="text-lg md:text-xl font-semibold tracking-tight text-foreground">
+                      Your properties
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Tap a property to view details, sync calendars, and manage settings.
+                    </p>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {properties.map((p) => (
+                      <PropertyCard key={p.id} property={p} />
+                    ))}
+                  </div>
+                </section>
+              )}
             </>
           )}
 
