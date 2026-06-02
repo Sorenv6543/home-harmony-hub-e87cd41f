@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { Repeat } from "lucide-react";
 
 type Status = "check-in" | "check-out" | "turn" | "urgent";
 
@@ -14,6 +15,12 @@ interface Booking {
   status: Status;
   cleaner?: string;
   label?: string; // e.g. "3:00 PM · Check-in"
+  recurring?: boolean;
+  cadence?: string; // e.g. "Weekly · Every Wednesday"
+  seriesId?: string;
+  occurrenceKey?: string;
+  propertyId?: string;
+  occurrenceDateISO?: string;
 }
 
 const HOURS = [8, 11, 14, 17, 20];
