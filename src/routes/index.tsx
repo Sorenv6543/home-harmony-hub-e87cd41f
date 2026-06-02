@@ -423,7 +423,8 @@ function DashboardPage() {
               )}
 
               {/* Section header for timeline */}
-              <section className="space-y-4">
+              {/* Section header for timeline */}
+              <section id="bookings-timeline" className="space-y-4 scroll-mt-20">
                 <div className="flex flex-wrap items-end justify-between gap-3">
                   <div>
                     <h3 className="text-lg md:text-xl font-semibold tracking-tight text-foreground">
