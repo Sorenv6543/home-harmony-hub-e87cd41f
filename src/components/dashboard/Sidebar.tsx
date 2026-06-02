@@ -11,11 +11,13 @@ import {
   Bell,
   ClipboardList,
   Sparkle,
+  Home,
 } from "lucide-react";
 import { store } from "@/lib/store";
 
 const dashboardItems = [
   { label: "Booking Dashboard", to: "/", icon: LayoutGrid },
+  { label: "Properties", to: "/properties", icon: Home },
   { label: "New Booking", to: "/new", icon: CalendarPlus },
   { label: "Booking Management", to: "/bookings", icon: ClipboardList },
 ];
