@@ -175,8 +175,6 @@ export function Timeline({
                         <button
                           onClick={() => onSelect(b.id)}
                           className={`absolute top-1.5 bottom-1.5 flex items-center gap-2 rounded-full border px-3.5 text-left transition-all ${s.bar} ${
-                            b.recurring && !b.cleaningCompany ? "border-l-[3px] border-l-warning" : ""
-                          } ${
                             selected
                               ? "ring-2 ring-primary ring-offset-2 ring-offset-surface"
                               : "hover:brightness-95"
@@ -197,12 +195,6 @@ export function Timeline({
                             >
                               <Repeat className="h-2.5 w-2.5" />
                             </span>
-                          )}
-                          {b.recurring && !b.cleaningCompany && (
-                            <span
-                              className="h-2 w-2 shrink-0 rounded-full bg-warning"
-                              aria-label="No cleaning company linked"
-                            />
                           )}
                         </button>
 
