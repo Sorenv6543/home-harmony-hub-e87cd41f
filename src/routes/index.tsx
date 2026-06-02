@@ -1,13 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { Bell, Search, Plus, CalendarCheck, Clock, Sun } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Bell, Search, Plus, CalendarCheck, Clock, Sun, AlertTriangle } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { Timeline, Legend, type Booking } from "@/components/dashboard/Timeline";
 import { BookingsTable } from "@/components/dashboard/BookingsTable";
 import { BookingDetail } from "@/components/dashboard/BookingDetail";
 import { EmptyState, type ChecklistState } from "@/components/dashboard/EmptyState";
-import { AddPropertyModal, type Property } from "@/components/dashboard/AddPropertyModal";
+import { AddPropertyModal } from "@/components/dashboard/AddPropertyModal";
+import { useStore, store, generateOccurrences } from "@/lib/store";
 
 
 
@@ -203,15 +204,97 @@ const bookings: Booking[] = [
 function DashboardPage() {
   const [selectedId, setSelectedId] = useState<string | undefined>("2");
   const [showEmpty, setShowEmpty] = useState(true);
-  const [properties, setProperties] = useState<Property[]>([]);
+  const properties = useStore((s) => s.properties);
+  const schedules = useStore((s) => s.schedules);
+  const skipped = useStore((s) => s.skipped);
+  const occurrenceCleaners = useStore((s) => s.occurrenceCleaners);
   const [modalOpen, setModalOpen] = useState(false);
   const [checklist, setChecklist] = useState<ChecklistState>({
     property: false,
     booking: false,
     turn: false,
   });
-  const selected = bookings.find((b) => b.id === selectedId);
-  const activeBookings = showEmpty ? [] : bookings;
+
+  // Generate recurring turns and merge into the active timeline.
+  const recurringBookings = useMemo<Booking[]>(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const out: Booking[] = [];
+    for (const schedule of schedules) {
+      const property = properties.find((p) => p.id === schedule.propertyId);
+      if (!property) continue;
+      const occurrences = generateOccurrences(schedule, 8, today);
+      for (const occ of occurrences) {
+        if (skipped.includes(occ.key)) continue;
+        const offset = Math.round((occ.date.getTime() - today.getTime()) / 86400000);
+        const day =
+          offset === 0
+            ? "today"
+            : offset === 1
+              ? "tomorrow"
+              : offset === 2
+                ? "wed"
+                : offset === 3
+                  ? "thu"
+                  : undefined;
+        if (!day) continue; // outside the visible 4-day window
+        const [hh, mm] = occ.time.split(":").map(Number);
+        const startHour = hh + (mm || 0) / 60;
+        const endHour = Math.min(20, startHour + occ.durationMin / 60);
+        const cleaner = occurrenceCleaners[occ.key] ?? occ.cleaner;
+        out.push({
+          id: `rec-${occ.key}`,
+          customer: property.address,
+          address: property.address,
+          city: `${property.city}, ${property.state}`,
+          service: `Recurring Turn · ${property.propertyType}`,
+          day,
+          startHour,
+          endHour,
+          status: "turn",
+          cleaner,
+          label: `${formatHourLabel(startHour)} · Recurring Turn`,
+          recurring: true,
+          cadence: occ.cadenceLabel,
+          seriesId: occ.scheduleId,
+          occurrenceKey: occ.key,
+          propertyId: occ.propertyId,
+          occurrenceDateISO: occ.date.toISOString().slice(0, 10),
+        });
+      }
+    }
+    return out;
+  }, [schedules, properties, skipped, occurrenceCleaners]);
+
+  // Unassigned recurring turns within next 7 days (for alert + attention badge).
+  const unassignedWeek = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const horizon = new Date(today);
+    horizon.setDate(horizon.getDate() + 7);
+    let count = 0;
+    for (const schedule of schedules) {
+      const occurrences = generateOccurrences(schedule, 1, today);
+      for (const occ of occurrences) {
+        if (skipped.includes(occ.key)) continue;
+        if (occ.date > horizon) continue;
+        const cleaner = occurrenceCleaners[occ.key] ?? occ.cleaner;
+        if (!cleaner) count++;
+      }
+    }
+    return count;
+  }, [schedules, skipped, occurrenceCleaners]);
+
+  const baseBookings = showEmpty ? [] : bookings;
+  const activeBookings = useMemo(
+    () => [...baseBookings, ...recurringBookings],
+    [baseBookings, recurringBookings],
+  );
+
+  const selected = activeBookings.find((b) => b.id === selectedId);
+
+  const urgentCount = baseBookings.filter((b) => b.status === "urgent").length;
+  const attentionCount = urgentCount + unassignedWeek;
 
   return (
     <div className="flex min-h-screen w-full bg-background">
@@ -298,19 +381,50 @@ function DashboardPage() {
                       Good morning, Elena
                     </h2>
                     <p className="mt-1.5 text-sm md:text-[15px] text-muted-foreground">
-                      <span className="font-semibold text-foreground">4 bookings</span> scheduled today ·{" "}
-                      <span className="font-semibold text-danger">1 needs attention</span>
+                      <span className="font-semibold text-foreground">
+                        {baseBookings.filter((b) => b.day === "today").length} bookings
+                      </span>{" "}
+                      scheduled today ·{" "}
+                      <span className={`font-semibold ${attentionCount > 0 ? "text-danger" : "text-foreground"}`}>
+                        {attentionCount} {attentionCount === 1 ? "needs" : "need"} attention
+                      </span>
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <StatCard label="Today" value="4" icon={CalendarCheck} />
+                    <StatCard
+                      label="Today"
+                      value={String(activeBookings.filter((b) => b.day === "today").length)}
+                      icon={CalendarCheck}
+                    />
                     <StatCard label="Week" value="48" icon={Clock} />
                   </div>
                 </div>
               </section>
 
+              {unassignedWeek > 0 && (
+                <a
+                  href="#bookings-timeline"
+                  className="flex items-start gap-3 rounded-2xl border border-warning/40 bg-warning-soft px-5 py-4 shadow-card transition-colors hover:brightness-[0.98]"
+                >
+                  <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold text-foreground">
+                      You have {unassignedWeek} unassigned recurring turn
+                      {unassignedWeek === 1 ? "" : "s"} this week.
+                    </p>
+                    <p className="text-[13px] text-muted-foreground">
+                      Assign cleaners to avoid gaps.
+                    </p>
+                  </div>
+                  <span className="self-center text-sm font-semibold text-foreground/80">
+                    Review turns →
+                  </span>
+                </a>
+              )}
+
               {/* Section header for timeline */}
-              <section className="space-y-4">
+              {/* Section header for timeline */}
+              <section id="bookings-timeline" className="space-y-4 scroll-mt-20">
                 <div className="flex flex-wrap items-end justify-between gap-3">
                   <div>
                     <h3 className="text-lg md:text-xl font-semibold tracking-tight text-foreground">
@@ -342,12 +456,20 @@ function DashboardPage() {
         open={modalOpen}
         onOpenChange={setModalOpen}
         onCreate={(p) => {
-          setProperties((arr) => [...arr, p]);
+          store.addProperty(p);
           setChecklist((c) => ({ ...c, property: true }));
           setShowEmpty(true);
         }}
       />
     </div>
   );
+}
+
+function formatHourLabel(h: number) {
+  const hr = Math.floor(h);
+  const m = Math.round((h - hr) * 60);
+  const period = hr < 12 ? "AM" : "PM";
+  const display = hr % 12 === 0 ? 12 : hr % 12;
+  return m ? `${display}:${m.toString().padStart(2, "0")} ${period}` : `${display}:00 ${period}`;
 }
 

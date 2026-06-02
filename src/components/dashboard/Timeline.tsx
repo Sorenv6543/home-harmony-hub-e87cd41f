@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { Repeat } from "lucide-react";
 
 type Status = "check-in" | "check-out" | "turn" | "urgent";
 
@@ -14,6 +15,12 @@ interface Booking {
   status: Status;
   cleaner?: string;
   label?: string; // e.g. "3:00 PM · Check-in"
+  recurring?: boolean;
+  cadence?: string; // e.g. "Weekly · Every Wednesday"
+  seriesId?: string;
+  occurrenceKey?: string;
+  propertyId?: string;
+  occurrenceDateISO?: string;
 }
 
 const HOURS = [8, 11, 14, 17, 20];
@@ -168,6 +175,8 @@ export function Timeline({
                         <button
                           onClick={() => onSelect(b.id)}
                           className={`absolute top-1.5 bottom-1.5 flex items-center gap-2 rounded-full border px-3.5 text-left transition-all ${s.bar} ${
+                            b.recurring && !b.cleaner ? "border-l-[3px] border-l-danger" : ""
+                          } ${
                             selected
                               ? "ring-2 ring-primary ring-offset-2 ring-offset-surface"
                               : "hover:brightness-95"
@@ -181,6 +190,20 @@ export function Timeline({
                           <span className={`text-[13px] font-semibold whitespace-nowrap ${s.text}`}>
                             {b.label ?? `${formatHour(b.startHour)} · ${s.label}`}
                           </span>
+                          {b.recurring && (
+                            <span
+                              className="inline-flex items-center gap-0.5 rounded-full bg-foreground/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-foreground/70"
+                              title={b.cadence}
+                            >
+                              <Repeat className="h-2.5 w-2.5" />
+                            </span>
+                          )}
+                          {b.recurring && !b.cleaner && (
+                            <span
+                              className="h-2 w-2 shrink-0 rounded-full bg-danger"
+                              aria-label="Unassigned"
+                            />
+                          )}
                         </button>
 
 
