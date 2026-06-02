@@ -208,6 +208,7 @@ function DashboardPage() {
   const schedules = useStore((s) => s.schedules);
   const skipped = useStore((s) => s.skipped);
   const occurrenceCleaners = useStore((s) => s.occurrenceCleaners);
+  const customBookings = useStore((s) => s.customBookings);
   const [modalOpen, setModalOpen] = useState(false);
   const [checklist, setChecklist] = useState<ChecklistState>({
     property: false,
