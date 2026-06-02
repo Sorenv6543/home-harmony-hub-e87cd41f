@@ -18,12 +18,10 @@ export type RecurringSchedule = {
   daysOfWeek: Dow[];
   time: string; // "HH:MM" 24h
   durationMin: number;
-  cleaner?: string;
+  cleaningCompany?: string;
   startDate: string; // ISO yyyy-mm-dd
   endDate?: string; // ISO yyyy-mm-dd
 };
-
-export const CLEANERS = ["Maria W.", "Jordan S.", "Elena R.", "Devon P."];
 
 type State = {
   properties: Property[];
