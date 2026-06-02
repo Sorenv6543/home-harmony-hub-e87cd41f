@@ -268,11 +268,100 @@ function DashboardPage() {
   }, [schedules, properties, skipped, occurrenceCleaners]);
 
 
+  // Convert user-created bookings (guest stay / owner block / maintenance) into timeline pills.
+  const customTimelineBookings = useMemo<Booking[]>(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const dayFor = (d: Date): Booking["day"] | undefined => {
+      const offset = Math.round((d.getTime() - today.getTime()) / 86400000);
+      return offset === 0 ? "today" : offset === 1 ? "tomorrow" : offset === 2 ? "wed" : offset === 3 ? "thu" : undefined;
+    };
+    const hourOf = (d: Date) => d.getHours() + d.getMinutes() / 60;
+    const out: Booking[] = [];
+    for (const cb of customBookings) {
+      const property = properties.find((p) => p.id === cb.propertyId);
+      if (!property) continue;
+      const inDT = new Date(cb.checkInISO);
+      const outDT = new Date(cb.checkOutISO);
+      const city = `${property.city}, ${property.state}`;
+
+      if (cb.type === "guest") {
+        const inDay = dayFor(new Date(inDT.getFullYear(), inDT.getMonth(), inDT.getDate()));
+        if (inDay) {
+          const sh = Math.max(8, Math.min(20, hourOf(inDT)));
+          out.push({
+            id: `cb-${cb.id}-in`,
+            customer: cb.guestName || "Guest",
+            address: property.address,
+            city,
+            service: `Guest stay · ${property.propertyType}`,
+            day: inDay,
+            startHour: sh,
+            endHour: Math.min(20, sh + 1.5),
+            status: "check-in",
+            label: `${formatHourLabel(sh)} · Check-in`,
+          });
+        }
+        const outDay = dayFor(new Date(outDT.getFullYear(), outDT.getMonth(), outDT.getDate()));
+        if (outDay) {
+          const eh = Math.max(8, Math.min(20, hourOf(outDT)));
+          out.push({
+            id: `cb-${cb.id}-out`,
+            customer: cb.guestName || "Guest",
+            address: property.address,
+            city,
+            service: `Guest stay · ${property.propertyType}`,
+            day: outDay,
+            startHour: Math.max(8, eh - 1.5),
+            endHour: eh,
+            status: "check-out",
+            label: `${formatHourLabel(eh)} · Check-out`,
+          });
+        }
+      } else {
+        // Owner block (turn / amber) or Maintenance (urgent / red): one pill per day in range.
+        const status: Booking["status"] = cb.type === "owner" ? "turn" : "urgent";
+        const labelTxt = cb.type === "owner" ? "Owner block" : "Maintenance";
+        const cursor = new Date(inDT.getFullYear(), inDT.getMonth(), inDT.getDate());
+        const lastDay = new Date(outDT.getFullYear(), outDT.getMonth(), outDT.getDate());
+        let i = 0;
+        while (cursor.getTime() <= lastDay.getTime() && i < 8) {
+          const day = dayFor(cursor);
+          if (day) {
+            const sameAsIn = cursor.getTime() === new Date(inDT.getFullYear(), inDT.getMonth(), inDT.getDate()).getTime();
+            const sameAsOut = cursor.getTime() === lastDay.getTime();
+            const sh = sameAsIn ? Math.max(8, Math.min(20, hourOf(inDT))) : 8;
+            const eh = sameAsOut ? Math.max(8, Math.min(20, hourOf(outDT))) : 20;
+            if (eh > sh) {
+              out.push({
+                id: `cb-${cb.id}-${i}`,
+                customer: labelTxt,
+                address: property.address,
+                city,
+                service: `${labelTxt} · ${property.propertyType}`,
+                day,
+                startHour: sh,
+                endHour: eh,
+                status,
+                label: `${labelTxt}`,
+              });
+            }
+          }
+          cursor.setDate(cursor.getDate() + 1);
+          i++;
+        }
+      }
+    }
+    return out;
+  }, [customBookings, properties]);
+
   const baseBookings = showEmpty ? [] : bookings;
   const activeBookings = useMemo(
-    () => [...baseBookings, ...recurringBookings],
-    [baseBookings, recurringBookings],
+    () => [...baseBookings, ...recurringBookings, ...customTimelineBookings],
+    [baseBookings, recurringBookings, customTimelineBookings],
   );
+
+
 
   const selected = activeBookings.find((b) => b.id === selectedId);
 
