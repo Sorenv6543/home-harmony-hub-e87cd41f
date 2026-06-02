@@ -54,7 +54,7 @@ export function BookingsTable({ bookings }: { bookings: Booking[] }) {
               <th className="px-6 py-3">Customer</th>
               <th className="px-6 py-3">Address</th>
               <th className="px-6 py-3">Service</th>
-              <th className="px-6 py-3">Cleaner</th>
+              <th className="px-6 py-3">Cleaning company</th>
               <th className="px-6 py-3">Time</th>
               <th className="px-6 py-3">Status</th>
               <th className="px-6 py-3 w-10" />
@@ -74,7 +74,7 @@ export function BookingsTable({ bookings }: { bookings: Booking[] }) {
                 <td className="px-6 py-4 text-muted-foreground">{b.address}</td>
                 <td className="px-6 py-4 text-muted-foreground">{b.service}</td>
                 <td className="px-6 py-4 text-muted-foreground">
-                  {b.cleaner ?? <span className="italic text-danger/80">Unassigned</span>}
+                  {b.cleaningCompany ?? <span className="italic text-warning">Not linked</span>}
                 </td>
                 <td className="px-6 py-4 text-muted-foreground">{formatHour(b.startHour)}</td>
                 <td className="px-6 py-4">

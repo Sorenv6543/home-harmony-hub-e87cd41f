@@ -13,7 +13,7 @@ interface Booking {
   startHour: number;
   endHour: number;
   status: Status;
-  cleaner?: string;
+  cleaningCompany?: string;
   label?: string; // e.g. "3:00 PM · Check-in"
   recurring?: boolean;
   cadence?: string; // e.g. "Weekly · Every Wednesday"
@@ -175,7 +175,7 @@ export function Timeline({
                         <button
                           onClick={() => onSelect(b.id)}
                           className={`absolute top-1.5 bottom-1.5 flex items-center gap-2 rounded-full border px-3.5 text-left transition-all ${s.bar} ${
-                            b.recurring && !b.cleaner ? "border-l-[3px] border-l-danger" : ""
+                            b.recurring && !b.cleaningCompany ? "border-l-[3px] border-l-warning" : ""
                           } ${
                             selected
                               ? "ring-2 ring-primary ring-offset-2 ring-offset-surface"
@@ -198,10 +198,10 @@ export function Timeline({
                               <Repeat className="h-2.5 w-2.5" />
                             </span>
                           )}
-                          {b.recurring && !b.cleaner && (
+                          {b.recurring && !b.cleaningCompany && (
                             <span
-                              className="h-2 w-2 shrink-0 rounded-full bg-danger"
-                              aria-label="Unassigned"
+                              className="h-2 w-2 shrink-0 rounded-full bg-warning"
+                              aria-label="No cleaning company linked"
                             />
                           )}
                         </button>

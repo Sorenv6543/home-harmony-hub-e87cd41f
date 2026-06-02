@@ -17,8 +17,6 @@ const dashboardItems = [
   { label: "Booking Dashboard", to: "/", icon: LayoutGrid },
   { label: "New Booking", to: "/new", icon: CalendarPlus },
   { label: "Booking Management", to: "/bookings", icon: ClipboardList },
-  { label: "Team Availability", to: "/team", icon: Users },
-  { label: "Staff Assignment", to: "/staff", icon: UserCheck },
 ];
 
 const settingsItems = [
