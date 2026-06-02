@@ -103,7 +103,15 @@ function NavGroup({
           );
           return (
             <li key={item.to}>
-              {routable ? (
+              {item.label === "New Booking" ? (
+                <button
+                  type="button"
+                  onClick={() => store.openNewBooking()}
+                  className={`${className} w-full text-left`}
+                >
+                  {inner}
+                </button>
+              ) : routable ? (
                 <Link to={item.to} className={className}>
                   {inner}
                 </Link>
