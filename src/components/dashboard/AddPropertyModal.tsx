@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -81,20 +81,37 @@ export function AddPropertyModal({
   open,
   onOpenChange,
   onCreate,
+  initial,
+  onUpdate,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreate: (p: Property) => void;
+  onCreate?: (p: Property) => void;
+  initial?: Property;
+  onUpdate?: (p: Property) => void;
 }) {
+  const isEdit = !!initial;
   const [step, setStep] = useState(0);
-  const [data, setData] = useState<Partial<Property>>({
-    color: COLORS[0].value,
-    propertyType: PROPERTY_TYPES[0],
-    cleaningDuration: 120,
-    pricingTier: "Standard",
-  });
-  const [airbnbOn, setAirbnbOn] = useState(false);
-  const [vrboOn, setVrboOn] = useState(false);
+  const [data, setData] = useState<Partial<Property>>(
+    initial ?? {
+      color: COLORS[0].value,
+      propertyType: PROPERTY_TYPES[0],
+      cleaningDuration: 120,
+      pricingTier: "Standard",
+    },
+  );
+  const [airbnbOn, setAirbnbOn] = useState(!!initial?.airbnbIcs);
+  const [vrboOn, setVrboOn] = useState(!!initial?.vrboIcs);
+
+  // Re-seed when opening with new initial data
+  useEffect(() => {
+    if (open && initial) {
+      setData(initial);
+      setAirbnbOn(!!initial.airbnbIcs);
+      setVrboOn(!!initial.vrboIcs);
+      setStep(0);
+    }
+  }, [open, initial]);
 
   const set = <K extends keyof Property>(key: K, value: Property[K]) =>
     setData((d) => ({ ...d, [key]: value }));
@@ -113,7 +130,7 @@ export function AddPropertyModal({
 
   const handleSubmit = () => {
     const property: Property = {
-      id: crypto.randomUUID(),
+      id: initial?.id ?? crypto.randomUUID(),
       address: data.address || "Untitled property",
       unit: data.unit,
       city: data.city || "",
@@ -134,24 +151,30 @@ export function AddPropertyModal({
       airbnbIcs: airbnbOn ? data.airbnbIcs : undefined,
       vrboIcs: vrboOn ? data.vrboIcs : undefined,
     };
-    onCreate(property);
-    toast.success("Property added! You're all set.");
+    if (isEdit) {
+      onUpdate?.(property);
+      toast.success("Property updated.");
+    } else {
+      onCreate?.(property);
+      toast.success("Property added! You're all set.");
+    }
     onOpenChange(false);
-    reset();
+    if (!isEdit) reset();
   };
+
 
   return (
     <Dialog
       open={open}
       onOpenChange={(o) => {
         onOpenChange(o);
-        if (!o) reset();
+        if (!o && !isEdit) reset();
       }}
     >
       <DialogContent className="max-w-3xl max-h-[92vh] overflow-y-auto p-0 gap-0 rounded-2xl">
         <div className="px-7 pt-7 pb-5 border-b border-border">
           <DialogTitle className="text-xl font-semibold tracking-tight">
-            Add a new property
+            {isEdit ? "Edit property" : "Add a new property"}
           </DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">
             Step {step + 1} of 3 — {STEP_LABELS[step].title}
@@ -449,7 +472,7 @@ export function AddPropertyModal({
               className="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-lift transition-transform hover:-translate-y-0.5"
               style={{ backgroundImage: "var(--gradient-primary)" }}
             >
-              Create Property <Check className="h-4 w-4" />
+              {isEdit ? "Save changes" : "Create Property"} <Check className="h-4 w-4" />
             </button>
           )}
         </div>
