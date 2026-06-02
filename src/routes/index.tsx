@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Bell, Search, Plus, CalendarCheck, Clock, Sun, AlertTriangle } from "lucide-react";
+import { Bell, Search, Plus, CalendarCheck, Clock, Sun } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { Timeline, Legend, type Booking } from "@/components/dashboard/Timeline";
