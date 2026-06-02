@@ -216,6 +216,11 @@ function DashboardPage() {
     turn: false,
   });
 
+  // When a custom booking is added, exit empty mode so it shows on the timeline.
+  useEffect(() => {
+    if (customBookings.length > 0) setShowEmpty(false);
+  }, [customBookings.length]);
+
   // Generate recurring turns and merge into the active timeline.
   const recurringBookings = useMemo<Booking[]>(() => {
     const today = new Date();
