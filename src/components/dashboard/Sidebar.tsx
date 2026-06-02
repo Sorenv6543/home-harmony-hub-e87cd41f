@@ -85,24 +85,34 @@ function NavGroup({
         {items.map((item) => {
           const active = pathname === item.to;
           const Icon = item.icon;
+          const routable = item.to === "/" || item.to === "/services";
+          const className = `group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+            active
+              ? "bg-primary/10 text-primary font-medium"
+              : "text-muted-foreground hover:bg-surface-muted hover:text-foreground"
+          }`;
+          const inner = (
+            <>
+              <Icon className={`h-4 w-4 ${active ? "text-primary" : ""}`} />
+              <span>{item.label}</span>
+              {item.label === "New Booking" && (
+                <span className="ml-auto rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
+                  New
+                </span>
+              )}
+            </>
+          );
           return (
             <li key={item.to}>
-              <a
-                href={item.to === "/" ? "/" : "#"}
-                className={`group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
-                  active
-                    ? "bg-primary/10 text-primary font-medium"
-                    : "text-muted-foreground hover:bg-surface-muted hover:text-foreground"
-                }`}
-              >
-                <Icon className={`h-4 w-4 ${active ? "text-primary" : ""}`} />
-                <span>{item.label}</span>
-                {item.label === "New Booking" && (
-                  <span className="ml-auto rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
-                    New
-                  </span>
-                )}
-              </a>
+              {routable ? (
+                <Link to={item.to} className={className}>
+                  {inner}
+                </Link>
+              ) : (
+                <a href="#" className={className}>
+                  {inner}
+                </a>
+              )}
             </li>
           );
         })}
