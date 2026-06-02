@@ -215,6 +215,13 @@ function DashboardPage() {
     booking: false,
     turn: false,
   });
+  const [showPropertiesHint, setShowPropertiesHint] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!showEmpty && properties.length > 0 && !window.localStorage.getItem("claro.hint.properties.dismissed")) {
+      setShowPropertiesHint(true);
+    }
+  }, [showEmpty, properties.length]);
 
   // When a custom booking is added, exit empty mode so it shows on the timeline.
   useEffect(() => {
