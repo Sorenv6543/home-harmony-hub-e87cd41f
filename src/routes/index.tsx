@@ -381,16 +381,46 @@ function DashboardPage() {
                       Good morning, Elena
                     </h2>
                     <p className="mt-1.5 text-sm md:text-[15px] text-muted-foreground">
-                      <span className="font-semibold text-foreground">4 bookings</span> scheduled today ·{" "}
-                      <span className="font-semibold text-danger">1 needs attention</span>
+                      <span className="font-semibold text-foreground">
+                        {baseBookings.filter((b) => b.day === "today").length} bookings
+                      </span>{" "}
+                      scheduled today ·{" "}
+                      <span className={`font-semibold ${attentionCount > 0 ? "text-danger" : "text-foreground"}`}>
+                        {attentionCount} {attentionCount === 1 ? "needs" : "need"} attention
+                      </span>
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <StatCard label="Today" value="4" icon={CalendarCheck} />
+                    <StatCard
+                      label="Today"
+                      value={String(activeBookings.filter((b) => b.day === "today").length)}
+                      icon={CalendarCheck}
+                    />
                     <StatCard label="Week" value="48" icon={Clock} />
                   </div>
                 </div>
               </section>
+
+              {unassignedWeek > 0 && (
+                <a
+                  href="#bookings-timeline"
+                  className="flex items-start gap-3 rounded-2xl border border-warning/40 bg-warning-soft px-5 py-4 shadow-card transition-colors hover:brightness-[0.98]"
+                >
+                  <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold text-foreground">
+                      You have {unassignedWeek} unassigned recurring turn
+                      {unassignedWeek === 1 ? "" : "s"} this week.
+                    </p>
+                    <p className="text-[13px] text-muted-foreground">
+                      Assign cleaners to avoid gaps.
+                    </p>
+                  </div>
+                  <span className="self-center text-sm font-semibold text-foreground/80">
+                    Review turns →
+                  </span>
+                </a>
+              )}
 
               {/* Section header for timeline */}
               <section className="space-y-4">
