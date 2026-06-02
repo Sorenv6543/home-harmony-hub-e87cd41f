@@ -202,7 +202,14 @@ const bookings: Booking[] = [
 
 function DashboardPage() {
   const [selectedId, setSelectedId] = useState<string | undefined>("2");
-  const [showEmpty, setShowEmpty] = useState(false);
+  const [showEmpty, setShowEmpty] = useState(true);
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [checklist, setChecklist] = useState<ChecklistState>({
+    property: false,
+    booking: false,
+    turn: false,
+  });
   const selected = bookings.find((b) => b.id === selectedId);
   const activeBookings = showEmpty ? [] : bookings;
 
