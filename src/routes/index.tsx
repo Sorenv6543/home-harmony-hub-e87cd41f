@@ -257,6 +257,7 @@ function DashboardPage() {
               <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-danger" />
             </button>
             <button
+              onClick={() => setModalOpen(true)}
               className="inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-sm transition-transform hover:-translate-y-0.5"
               style={{ backgroundImage: "var(--gradient-primary)" }}
             >
