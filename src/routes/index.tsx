@@ -552,7 +552,6 @@ function formatHourLabel(h: number) {
 }
 
 function PropertyCard({ property: p }: { property: import("@/components/dashboard/AddPropertyModal").Property }) {
-  const { Link } = require("@tanstack/react-router") as typeof import("@tanstack/react-router");
   return (
     <Link
       to="/properties/$id"
