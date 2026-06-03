@@ -33,6 +33,7 @@ export const DEMO_BOOKINGS: DemoBooking[] = [
   { address: "Lakeview Cottage", day: "tomorrow", startHour: 16, status: "check-in", cleaningCompany: "Bright & Clean Co." },
   { address: "Lakeview Cottage", day: "wed", startHour: 10, status: "check-out" },
   { address: "88 Birch Ln", day: "today", startHour: 18, status: "check-out" },
+  { address: "Lakeview Cottage", day: "today", startHour: 14, status: "turn", cleaningCompany: "Sparkle Pros" },
 ];
 
 const DAY_OFFSET: Record<DemoBooking["day"], number> = { today: 0, tomorrow: 1, wed: 2, thu: 3 };
