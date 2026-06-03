@@ -138,7 +138,7 @@ export function formatNextEvent(events: PropertyEvent[]): string | null {
 export const STATUS_BADGE_STYLES: Record<PropertyStatus, string> = {
   Vacant: "bg-success-soft text-success border border-success/30",
   Occupied: "bg-info-soft text-info border border-info/30",
-  "Turn Today": "bg-warning-soft text-warning-foreground border border-warning/30",
+  "Turn Today": "bg-warning-soft text-warning border border-warning/30",
   "Check-out Today": "bg-danger-soft text-danger border border-danger/30",
 };
 
