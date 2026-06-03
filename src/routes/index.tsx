@@ -488,50 +488,68 @@ function DashboardPage() {
                 </div>
               </section>
 
-              {properties.length > 0 && (
-                <section id="your-properties" className="space-y-4 scroll-mt-20">
-                  {showPropertiesHint && (
-                    <div className="flex items-start gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-4">
-                      <span className="mt-0.5 text-lg" aria-hidden>👇</span>
-                      <div className="flex-1 text-sm text-foreground">
-                        <p className="font-semibold">Tip: tap a property below</p>
-                        <p className="text-muted-foreground">
-                          Open any property to see its turns, calendar sync, and access notes.
+              {properties.length > 0 && (() => {
+                const isSampleMode = properties.length > 0 && properties.every((p) => p.id.startsWith("sample-"));
+                const includeDemo = !showEmpty; // when bookings are visible
+                const summaries = properties.map((p) => ({
+                  property: p,
+                  summary: getPropertySummary(p, schedules, customBookings, includeDemo),
+                }));
+                // Prioritize: today (0) first, then tomorrow (1), then by dayOffset asc, then name.
+                summaries.sort((a, b) => {
+                  const ao = a.summary.nextEvent?.dayOffset ?? 99;
+                  const bo = b.summary.nextEvent?.dayOffset ?? 99;
+                  return ao - bo;
+                });
+                const cap = isSampleMode ? 4 : 6;
+                const shown = summaries.slice(0, cap);
+                const hidden = summaries.length - shown.length;
+                return (
+                  <section id="your-properties" className="space-y-4 scroll-mt-20">
+                    {showPropertiesHint && (
+                      <div className="flex items-start gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-4">
+                        <span className="mt-0.5 text-lg" aria-hidden>👇</span>
+                        <div className="flex-1 text-sm text-foreground">
+                          <p className="font-semibold">Tip: tap a property below</p>
+                          <p className="text-muted-foreground">
+                            Open any property to see its turns, calendar sync, and access notes.
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setShowPropertiesHint(false);
+                            if (typeof window !== "undefined") {
+                              window.localStorage.setItem("claro.hint.properties.dismissed", "1");
+                            }
+                          }}
+                          className="rounded-md px-2 py-1 text-xs font-semibold text-muted-foreground hover:bg-surface-muted"
+                        >
+                          Got it
+                        </button>
+                      </div>
+                    )}
+                    <div className="flex flex-wrap items-end justify-between gap-3">
+                      <div>
+                        <h3 className="text-lg md:text-xl font-semibold tracking-tight text-foreground">
+                          Your properties
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          Tap a property to view details, sync calendars, and manage settings.
                         </p>
                       </div>
-                      <button
-                        onClick={() => {
-                          setShowPropertiesHint(false);
-                          if (typeof window !== "undefined") {
-                            window.localStorage.setItem("claro.hint.properties.dismissed", "1");
-                          }
-                        }}
-                        className="rounded-md px-2 py-1 text-xs font-semibold text-muted-foreground hover:bg-surface-muted"
-                      >
-                        Got it
-                      </button>
+                      <Link to="/properties" className="text-sm font-semibold text-primary hover:underline">
+                        View all{hidden > 0 ? ` (${hidden} more)` : ""} →
+                      </Link>
                     </div>
-                  )}
-                  <div className="flex flex-wrap items-end justify-between gap-3">
-                    <div>
-                      <h3 className="text-lg md:text-xl font-semibold tracking-tight text-foreground">
-                        Your properties
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        Tap a property to view details, sync calendars, and manage settings.
-                      </p>
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 grid-rows-[auto] max-h-[28rem] overflow-hidden">
+                      {shown.map(({ property, summary }) => (
+                        <PropertyCard key={property.id} property={property} status={summary.status} nextEventLabel={summary.nextEventLabel} />
+                      ))}
                     </div>
-                    <Link to="/properties" className="text-sm font-semibold text-primary hover:underline">
-                      View all →
-                    </Link>
-                  </div>
-                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    {properties.map((p) => (
-                      <PropertyCard key={p.id} property={p} />
-                    ))}
-                  </div>
-                </section>
-              )}
+                  </section>
+                );
+              })()}
+
 
               {/* Section header for timeline */}
               <section id="bookings-timeline" className="space-y-4 scroll-mt-20">
