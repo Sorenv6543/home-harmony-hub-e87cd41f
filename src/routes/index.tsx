@@ -603,26 +603,40 @@ function formatHourLabel(h: number) {
   return m ? `${display}:${m.toString().padStart(2, "0")} ${period}` : `${display}:00 ${period}`;
 }
 
-function PropertyCard({ property: p }: { property: import("@/components/dashboard/AddPropertyModal").Property }) {
+function PropertyCard({
+  property: p,
+  status,
+  nextEventLabel,
+}: {
+  property: import("@/components/dashboard/AddPropertyModal").Property;
+  status: PropertyStatus;
+  nextEventLabel: string | null;
+}) {
   return (
     <Link
       to="/properties/$id"
       params={{ id: p.id }}
-      className="group flex items-center gap-4 rounded-2xl border border-border bg-surface p-4 shadow-card transition-colors hover:border-primary/30"
+      className="group flex items-start gap-3 rounded-2xl border border-border bg-surface p-4 shadow-card transition-colors hover:border-primary/30"
     >
-      <span className="h-10 w-10 shrink-0 rounded-xl" style={{ backgroundColor: p.color }} aria-hidden />
+      <span className="mt-0.5 h-10 w-10 shrink-0 rounded-xl" style={{ backgroundColor: p.color }} aria-hidden />
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold text-foreground">
-          {p.address}{p.unit ? `, ${p.unit}` : ""}
-        </p>
+        <div className="flex items-start justify-between gap-2">
+          <p className="truncate text-sm font-semibold text-foreground">
+            {p.address}{p.unit ? `, ${p.unit}` : ""}
+          </p>
+          <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${STATUS_BADGE_STYLES[status]}`}>
+            {status}
+          </span>
+        </div>
         <p className="mt-0.5 truncate text-[12px] text-muted-foreground">
           {p.city}, {p.state} · {p.bedrooms} bd · {p.bathrooms} ba
         </p>
+        <p className="mt-1 truncate text-[12px] font-medium text-foreground/70">
+          {nextEventLabel ?? "No upcoming events"}
+        </p>
       </div>
-      <span className="rounded-full bg-surface-muted px-2.5 py-1 text-[11px] font-semibold text-foreground/70">
-        {p.propertyType}
-      </span>
     </Link>
   );
 }
+
 
