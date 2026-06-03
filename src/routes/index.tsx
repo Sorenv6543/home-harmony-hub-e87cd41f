@@ -9,6 +9,7 @@ import { BookingDetail } from "@/components/dashboard/BookingDetail";
 import { EmptyState, type ChecklistState } from "@/components/dashboard/EmptyState";
 import { AddPropertyModal } from "@/components/dashboard/AddPropertyModal";
 import { useStore, store, generateOccurrences } from "@/lib/store";
+import { getPropertySummary, STATUS_BADGE_STYLES, type PropertyStatus } from "@/lib/propertyStatus";
 
 
 
