@@ -9,6 +9,7 @@ import { BookingDetail } from "@/components/dashboard/BookingDetail";
 import { EmptyState, type ChecklistState } from "@/components/dashboard/EmptyState";
 import { AddPropertyModal } from "@/components/dashboard/AddPropertyModal";
 import { useStore, store, generateOccurrences } from "@/lib/store";
+import { getPropertySummary, STATUS_BADGE_STYLES, type PropertyStatus } from "@/lib/propertyStatus";
 
 
 
@@ -488,50 +489,68 @@ function DashboardPage() {
                 </div>
               </section>
 
-              {properties.length > 0 && (
-                <section id="your-properties" className="space-y-4 scroll-mt-20">
-                  {showPropertiesHint && (
-                    <div className="flex items-start gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-4">
-                      <span className="mt-0.5 text-lg" aria-hidden>👇</span>
-                      <div className="flex-1 text-sm text-foreground">
-                        <p className="font-semibold">Tip: tap a property below</p>
-                        <p className="text-muted-foreground">
-                          Open any property to see its turns, calendar sync, and access notes.
+              {properties.length > 0 && (() => {
+                const isSampleMode = properties.length > 0 && properties.every((p) => p.id.startsWith("sample-"));
+                const includeDemo = !showEmpty; // when bookings are visible
+                const summaries = properties.map((p) => ({
+                  property: p,
+                  summary: getPropertySummary(p, schedules, customBookings, includeDemo),
+                }));
+                // Prioritize: today (0) first, then tomorrow (1), then by dayOffset asc, then name.
+                summaries.sort((a, b) => {
+                  const ao = a.summary.nextEvent?.dayOffset ?? 99;
+                  const bo = b.summary.nextEvent?.dayOffset ?? 99;
+                  return ao - bo;
+                });
+                const cap = isSampleMode ? 4 : 6;
+                const shown = summaries.slice(0, cap);
+                const hidden = summaries.length - shown.length;
+                return (
+                  <section id="your-properties" className="space-y-4 scroll-mt-20">
+                    {showPropertiesHint && (
+                      <div className="flex items-start gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-4">
+                        <span className="mt-0.5 text-lg" aria-hidden>👇</span>
+                        <div className="flex-1 text-sm text-foreground">
+                          <p className="font-semibold">Tip: tap a property below</p>
+                          <p className="text-muted-foreground">
+                            Open any property to see its turns, calendar sync, and access notes.
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setShowPropertiesHint(false);
+                            if (typeof window !== "undefined") {
+                              window.localStorage.setItem("claro.hint.properties.dismissed", "1");
+                            }
+                          }}
+                          className="rounded-md px-2 py-1 text-xs font-semibold text-muted-foreground hover:bg-surface-muted"
+                        >
+                          Got it
+                        </button>
+                      </div>
+                    )}
+                    <div className="flex flex-wrap items-end justify-between gap-3">
+                      <div>
+                        <h3 className="text-lg md:text-xl font-semibold tracking-tight text-foreground">
+                          Your properties
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          Tap a property to view details, sync calendars, and manage settings.
                         </p>
                       </div>
-                      <button
-                        onClick={() => {
-                          setShowPropertiesHint(false);
-                          if (typeof window !== "undefined") {
-                            window.localStorage.setItem("claro.hint.properties.dismissed", "1");
-                          }
-                        }}
-                        className="rounded-md px-2 py-1 text-xs font-semibold text-muted-foreground hover:bg-surface-muted"
-                      >
-                        Got it
-                      </button>
+                      <Link to="/properties" className="text-sm font-semibold text-primary hover:underline">
+                        View all{hidden > 0 ? ` (${hidden} more)` : ""} →
+                      </Link>
                     </div>
-                  )}
-                  <div className="flex flex-wrap items-end justify-between gap-3">
-                    <div>
-                      <h3 className="text-lg md:text-xl font-semibold tracking-tight text-foreground">
-                        Your properties
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        Tap a property to view details, sync calendars, and manage settings.
-                      </p>
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 grid-rows-[auto] max-h-[28rem] overflow-hidden">
+                      {shown.map(({ property, summary }) => (
+                        <PropertyCard key={property.id} property={property} status={summary.status} nextEventLabel={summary.nextEventLabel} />
+                      ))}
                     </div>
-                    <Link to="/properties" className="text-sm font-semibold text-primary hover:underline">
-                      View all →
-                    </Link>
-                  </div>
-                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    {properties.map((p) => (
-                      <PropertyCard key={p.id} property={p} />
-                    ))}
-                  </div>
-                </section>
-              )}
+                  </section>
+                );
+              })()}
+
 
               {/* Section header for timeline */}
               <section id="bookings-timeline" className="space-y-4 scroll-mt-20">
@@ -584,26 +603,40 @@ function formatHourLabel(h: number) {
   return m ? `${display}:${m.toString().padStart(2, "0")} ${period}` : `${display}:00 ${period}`;
 }
 
-function PropertyCard({ property: p }: { property: import("@/components/dashboard/AddPropertyModal").Property }) {
+function PropertyCard({
+  property: p,
+  status,
+  nextEventLabel,
+}: {
+  property: import("@/components/dashboard/AddPropertyModal").Property;
+  status: PropertyStatus;
+  nextEventLabel: string | null;
+}) {
   return (
     <Link
       to="/properties/$id"
       params={{ id: p.id }}
-      className="group flex items-center gap-4 rounded-2xl border border-border bg-surface p-4 shadow-card transition-colors hover:border-primary/30"
+      className="group flex items-start gap-3 rounded-2xl border border-border bg-surface p-4 shadow-card transition-colors hover:border-primary/30"
     >
-      <span className="h-10 w-10 shrink-0 rounded-xl" style={{ backgroundColor: p.color }} aria-hidden />
+      <span className="mt-0.5 h-10 w-10 shrink-0 rounded-xl" style={{ backgroundColor: p.color }} aria-hidden />
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold text-foreground">
-          {p.address}{p.unit ? `, ${p.unit}` : ""}
-        </p>
+        <div className="flex items-start justify-between gap-2">
+          <p className="truncate text-sm font-semibold text-foreground">
+            {p.address}{p.unit ? `, ${p.unit}` : ""}
+          </p>
+          <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${STATUS_BADGE_STYLES[status]}`}>
+            {status}
+          </span>
+        </div>
         <p className="mt-0.5 truncate text-[12px] text-muted-foreground">
           {p.city}, {p.state} · {p.bedrooms} bd · {p.bathrooms} ba
         </p>
+        <p className="mt-1 truncate text-[12px] font-medium text-foreground/70">
+          {nextEventLabel ?? "No upcoming events"}
+        </p>
       </div>
-      <span className="rounded-full bg-surface-muted px-2.5 py-1 text-[11px] font-semibold text-foreground/70">
-        {p.propertyType}
-      </span>
     </Link>
   );
 }
+
 
