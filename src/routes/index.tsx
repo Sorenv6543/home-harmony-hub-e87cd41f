@@ -212,6 +212,7 @@ function DashboardPage() {
   const occurrenceCleaners = useStore((s) => s.occurrenceCleaners);
   const customBookings = useStore((s) => s.customBookings);
   const [modalOpen, setModalOpen] = useState(false);
+  const [syncOpen, setSyncOpen] = useState(false);
   const [checklist, setChecklist] = useState<ChecklistState>({
     property: false,
     booking: false,
