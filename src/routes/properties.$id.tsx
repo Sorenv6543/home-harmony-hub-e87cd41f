@@ -5,15 +5,13 @@ import {
   Pencil,
   CalendarDays,
   Clock,
-  RefreshCw,
-  Loader2,
-  Plus,
   Check,
 } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { AddPropertyModal } from "@/components/dashboard/AddPropertyModal";
+import { CalendarSyncPanel } from "@/components/dashboard/CalendarSyncPanel";
 import { useStore, store, generateOccurrences } from "@/lib/store";
-import type { Property } from "@/components/dashboard/AddPropertyModal";
+
 
 export const Route = createFileRoute("/properties/$id")({
   head: ({ params }) => ({
