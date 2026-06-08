@@ -449,6 +449,7 @@ function DashboardPage() {
           {showEmpty ? (
             <EmptyState
               onAddProperty={() => setModalOpen(true)}
+              onConnectCalendars={() => setSyncOpen(true)}
               onPreviewSample={() => {
                 store.seedSampleProperties();
                 setShowEmpty(false);
