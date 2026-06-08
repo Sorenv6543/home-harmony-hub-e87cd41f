@@ -1,4 +1,4 @@
-import { Check, Sparkles, Home, MapPin, Bed, Bath, ChevronRight } from "lucide-react";
+import { Check, Sparkles, Home, MapPin, Bed, Bath, ChevronRight, Calendar } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { Property } from "./AddPropertyModal";
 
