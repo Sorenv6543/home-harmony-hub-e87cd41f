@@ -29,11 +29,13 @@ const STEPS = [
 export function EmptyState({
   onAddProperty,
   onPreviewSample,
+  onConnectCalendars,
   completed,
   properties = [],
 }: {
   onAddProperty: () => void;
   onPreviewSample: () => void;
+  onConnectCalendars?: () => void;
   completed: ChecklistState;
   properties?: Property[];
 }) {
