@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Bell, Search, Plus, CalendarCheck, Clock, Sun } from "lucide-react";
+import { Bell, Search, Plus, CalendarCheck, Clock, Sun, Calendar } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { Timeline, Legend, type Booking } from "@/components/dashboard/Timeline";
@@ -8,6 +8,7 @@ import { BookingsTable } from "@/components/dashboard/BookingsTable";
 import { BookingDetail } from "@/components/dashboard/BookingDetail";
 import { EmptyState, type ChecklistState } from "@/components/dashboard/EmptyState";
 import { AddPropertyModal } from "@/components/dashboard/AddPropertyModal";
+import { ConnectCalendarsModal } from "@/components/dashboard/ConnectCalendarsModal";
 import { useStore, store, generateOccurrences } from "@/lib/store";
 import { getPropertySummary, STATUS_BADGE_STYLES, type PropertyStatus } from "@/lib/propertyStatus";
 
