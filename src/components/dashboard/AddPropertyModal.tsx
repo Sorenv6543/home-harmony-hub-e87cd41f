@@ -47,6 +47,7 @@ export type Property = {
   contactPhone?: string;
   airbnbIcs?: string;
   vrboIcs?: string;
+  googleCalEmail?: string;
 };
 
 const COLORS = [

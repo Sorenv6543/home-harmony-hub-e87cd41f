@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Bell, Search, Plus, CalendarCheck, Clock, Sun } from "lucide-react";
+import { Bell, Search, Plus, CalendarCheck, Clock, Sun, Calendar } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { Timeline, Legend, type Booking } from "@/components/dashboard/Timeline";
@@ -8,6 +8,7 @@ import { BookingsTable } from "@/components/dashboard/BookingsTable";
 import { BookingDetail } from "@/components/dashboard/BookingDetail";
 import { EmptyState, type ChecklistState } from "@/components/dashboard/EmptyState";
 import { AddPropertyModal } from "@/components/dashboard/AddPropertyModal";
+import { ConnectCalendarsModal } from "@/components/dashboard/ConnectCalendarsModal";
 import { useStore, store, generateOccurrences } from "@/lib/store";
 import { getPropertySummary, STATUS_BADGE_STYLES, type PropertyStatus } from "@/lib/propertyStatus";
 
@@ -211,6 +212,7 @@ function DashboardPage() {
   const occurrenceCleaners = useStore((s) => s.occurrenceCleaners);
   const customBookings = useStore((s) => s.customBookings);
   const [modalOpen, setModalOpen] = useState(false);
+  const [syncOpen, setSyncOpen] = useState(false);
   const [checklist, setChecklist] = useState<ChecklistState>({
     property: false,
     booking: false,
@@ -420,6 +422,12 @@ function DashboardPage() {
                 First-time
               </button>
             </div>
+            <button
+              onClick={() => setSyncOpen(true)}
+              className="hidden sm:inline-flex items-center gap-1.5 rounded-xl border border-border bg-surface px-3 py-2 text-xs font-semibold text-foreground/80 hover:bg-surface-muted"
+            >
+              <Calendar className="h-3.5 w-3.5 text-primary" /> Sync calendars
+            </button>
             <button className="relative rounded-xl border border-border bg-surface p-2 text-muted-foreground hover:text-foreground">
               <Bell className="h-4 w-4" />
               <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-danger" />
@@ -441,6 +449,7 @@ function DashboardPage() {
           {showEmpty ? (
             <EmptyState
               onAddProperty={() => setModalOpen(true)}
+              onConnectCalendars={() => setSyncOpen(true)}
               onPreviewSample={() => {
                 store.seedSampleProperties();
                 setShowEmpty(false);
@@ -591,6 +600,8 @@ function DashboardPage() {
           setShowEmpty(true);
         }}
       />
+
+      <ConnectCalendarsModal open={syncOpen} onOpenChange={setSyncOpen} />
     </div>
   );
 }

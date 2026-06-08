@@ -1,4 +1,4 @@
-import { Check, Sparkles, Home, MapPin, Bed, Bath, ChevronRight } from "lucide-react";
+import { Check, Sparkles, Home, MapPin, Bed, Bath, ChevronRight, Calendar } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { Property } from "./AddPropertyModal";
 
@@ -29,11 +29,13 @@ const STEPS = [
 export function EmptyState({
   onAddProperty,
   onPreviewSample,
+  onConnectCalendars,
   completed,
   properties = [],
 }: {
   onAddProperty: () => void;
   onPreviewSample: () => void;
+  onConnectCalendars?: () => void;
   completed: ChecklistState;
   properties?: Property[];
 }) {
@@ -116,6 +118,26 @@ export function EmptyState({
               Preview with sample data →
             </button>
           </div>
+
+          {onConnectCalendars && (
+            <button
+              onClick={onConnectCalendars}
+              className="mt-5 flex w-full items-center gap-3 rounded-2xl border border-border bg-surface-muted/40 p-4 text-left transition-colors hover:border-primary/30 hover:bg-surface-muted"
+            >
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <Calendar className="h-5 w-5" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-semibold text-foreground">
+                  Sync Airbnb, VRBO & Google Calendar
+                </span>
+                <span className="block text-[12px] text-muted-foreground">
+                  Connect once and Claro pulls in new bookings automatically.
+                </span>
+              </span>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </button>
+          )}
         </div>
       </section>
 
