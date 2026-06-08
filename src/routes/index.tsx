@@ -422,6 +422,12 @@ function DashboardPage() {
                 First-time
               </button>
             </div>
+            <button
+              onClick={() => setSyncOpen(true)}
+              className="hidden sm:inline-flex items-center gap-1.5 rounded-xl border border-border bg-surface px-3 py-2 text-xs font-semibold text-foreground/80 hover:bg-surface-muted"
+            >
+              <Calendar className="h-3.5 w-3.5 text-primary" /> Sync calendars
+            </button>
             <button className="relative rounded-xl border border-border bg-surface p-2 text-muted-foreground hover:text-foreground">
               <Bell className="h-4 w-4" />
               <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-danger" />
