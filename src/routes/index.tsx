@@ -600,6 +600,8 @@ function DashboardPage() {
           setShowEmpty(true);
         }}
       />
+
+      <ConnectCalendarsModal open={syncOpen} onOpenChange={setSyncOpen} />
     </div>
   );
 }
