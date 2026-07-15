@@ -14,6 +14,16 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
-    plugins: [mcpPlugin()],
+    plugins: [
+      // Public MCP server: stateless tools, no auth. No OAuth metadata needed.
+      mcpPlugin({ protectedResourceMetadataRoute: false }),
+      // Authenticated MCP server: OAuth-gated sensitive tools.
+      // This mount owns the /.well-known/oauth-protected-resource route that
+      // OAuth clients use to discover the authorization server.
+      mcpPlugin({
+        mcpEntry: "src/lib/mcp/admin.ts",
+        path: "/mcp-admin",
+      }),
+    ],
   },
 });
