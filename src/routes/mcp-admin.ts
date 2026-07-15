@@ -12,7 +12,7 @@ import mcp from "../lib/mcp/admin";
 export const Route = createFileRoute("/mcp-admin")({
   server: {
     handlers: {
-      ANY: createTanStackMcpHandler(mcp, { resourcePath: "/mcp-admin", trustForwardedHost: true }),
+      ANY: createTanStackMcpHandler(mcp, { resourcePath: "/mcp-admin", metadataPath: "/.well-known/oauth-protected-resource", trustForwardedHost: true }),
     },
   },
 });
