@@ -14,6 +14,16 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
-    plugins: [mcpPlugin()],
+    plugins: [
+      // Public MCP server: stateless tools, no auth.
+      mcpPlugin(),
+      // Authenticated MCP server: OAuth-gated sensitive tools.
+      mcpPlugin({
+        mcpEntry: "src/lib/mcp/admin.ts",
+        path: "/mcp-admin",
+        // Only one plugin instance may emit the /.well-known/oauth-protected-resource route.
+        protectedResourceMetadataRoute: false,
+      }),
+    ],
   },
 });
