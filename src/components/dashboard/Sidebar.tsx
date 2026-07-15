@@ -70,6 +70,41 @@ export function Sidebar() {
         </div>
       </nav>
 
+      <div className="mx-3 mb-2 rounded-xl border border-border bg-surface-muted p-3">
+        {email ? (
+          <div className="flex items-center gap-2">
+            <div className="min-w-0 flex-1">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Signed in
+              </p>
+              <p className="truncate text-xs text-foreground" title={email}>
+                {email}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={signOut}
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-surface hover:text-foreground"
+              aria-label="Sign out"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
+          </div>
+        ) : (
+          <Link
+            to="/auth"
+            className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-muted-foreground hover:bg-surface hover:text-foreground"
+          >
+            <LogIn className="h-4 w-4" />
+            <span>Sign in</span>
+            <span className="ml-auto rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
+              MCP
+            </span>
+          </Link>
+        )}
+      </div>
+
+
       <div className="m-3 rounded-xl border border-border bg-surface-muted p-4">
         <p className="text-xs font-semibold text-foreground">Upgrade to Pro</p>
         <p className="mt-1 text-xs text-muted-foreground">
