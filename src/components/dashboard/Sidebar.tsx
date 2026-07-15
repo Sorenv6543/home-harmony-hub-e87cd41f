@@ -1,4 +1,5 @@
 import { useRouterState, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import {
   LayoutGrid,
   CalendarPlus,
@@ -12,8 +13,11 @@ import {
   ClipboardList,
   Sparkle,
   Home,
+  LogIn,
+  LogOut,
 } from "lucide-react";
 import { store } from "@/lib/store";
+import { supabase } from "@/integrations/supabase/client";
 
 const dashboardItems = [
   { label: "Booking Dashboard", to: "/", icon: LayoutGrid },
@@ -32,6 +36,21 @@ const settingsItems = [
 
 export function Sidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const [email, setEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setEmail(data.session?.user?.email ?? null);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setEmail(session?.user?.email ?? null);
+    });
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  async function signOut() {
+    await supabase.auth.signOut();
+  }
 
   return (
     <aside className="hidden lg:flex w-64 shrink-0 flex-col border-r border-border bg-surface">
