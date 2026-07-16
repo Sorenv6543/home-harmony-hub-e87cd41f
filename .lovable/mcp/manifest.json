@@ -3,7 +3,11 @@
   "sdk_version": "0.22.1",
   "path": "/mcp",
   "auth": {
-    "type": "none"
+    "type": "oauth",
+    "issuer": "https://dcgcybysikmdqfmrggdy.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
   },
   "mcp": {
     "server": {
@@ -12,6 +16,22 @@
       "title": "Claro MCP"
     },
     "tools": [
+      {
+        "name": "whoami",
+        "title": "Who am I?",
+        "description": "Returns the signed-in Claro user's ID and email (from the verified OAuth token). Requires authentication.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
       {
         "name": "get_app_info",
         "title": "Get app info",

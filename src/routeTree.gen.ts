@@ -10,7 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ServicesRouteImport } from './routes/services'
-import { Route as McpAdminRouteImport } from './routes/mcp-admin'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PropertiesIndexRouteImport } from './routes/properties.index'
@@ -25,9 +25,9 @@ const ServicesRoute = ServicesRouteImport.update({
   path: '/services',
   getParentRoute: () => rootRouteImport,
 } as any)
-const McpAdminRoute = McpAdminRouteImport.update({
-  id: '/mcp-admin',
-  path: '/mcp-admin',
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -77,7 +77,7 @@ const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/mcp-admin': typeof McpAdminRoute
+  '/mcp': typeof McpRoute
   '/services': typeof ServicesRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -89,7 +89,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/mcp-admin': typeof McpAdminRoute
+  '/mcp': typeof McpRoute
   '/services': typeof ServicesRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -102,7 +102,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/mcp-admin': typeof McpAdminRoute
+  '/mcp': typeof McpRoute
   '/services': typeof ServicesRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -116,7 +116,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
-    | '/mcp-admin'
+    | '/mcp'
     | '/services'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -128,7 +128,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
-    | '/mcp-admin'
+    | '/mcp'
     | '/services'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -140,7 +140,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/auth'
-    | '/mcp-admin'
+    | '/mcp'
     | '/services'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -153,7 +153,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
-  McpAdminRoute: typeof McpAdminRoute
+  McpRoute: typeof McpRoute
   ServicesRoute: typeof ServicesRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -172,11 +172,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/mcp-admin': {
-      id: '/mcp-admin'
-      path: '/mcp-admin'
-      fullPath: '/mcp-admin'
-      preLoaderRoute: typeof McpAdminRouteImport
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -241,7 +241,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
-  McpAdminRoute: McpAdminRoute,
+  McpRoute: McpRoute,
   ServicesRoute: ServicesRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
