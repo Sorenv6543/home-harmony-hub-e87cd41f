@@ -79,14 +79,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "Booking Dashboard — Claro" },
+      { name: "description", content: "Manage today's cleaning bookings, your team, and upcoming schedule from one warm, intuitive dashboard." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Booking Dashboard — Claro" },
+      { property: "og:description", content: "Manage today's cleaning bookings, your team, and upcoming schedule from one warm, intuitive dashboard." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Booking Dashboard — Claro" },
+      { name: "twitter:description", content: "Manage today's cleaning bookings, your team, and upcoming schedule from one warm, intuitive dashboard." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2f95be49-7080-40cd-94b3-434e70261cd9/id-preview-12ef6a0a--78ea11fe-3800-40da-9ce8-305fcb7a5129.lovable.app-1784192747154.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2f95be49-7080-40cd-94b3-434e70261cd9/id-preview-12ef6a0a--78ea11fe-3800-40da-9ce8-305fcb7a5129.lovable.app-1784192747154.png" },
     ],
     links: [
       {
