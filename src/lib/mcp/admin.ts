@@ -1,8 +1,10 @@
 import { auth, defineMcp } from "@lovable.dev/mcp-js";
 import whoami from "./tools/whoami";
+import getAppInfo from "./tools/get-app-info";
+import estimateCleaning from "./tools/estimate-cleaning";
 
-// Authenticated MCP server — mounted at /mcp-admin.
-// Callers must present a Supabase OAuth 2.1 bearer token; unauthenticated
+// Single authenticated MCP server — mounted at /mcp.
+// All Claro MCP tools require a Supabase OAuth 2.1 bearer token; unauthenticated
 // requests are rejected with 401 + a WWW-Authenticate challenge that points
 // clients at /.well-known/oauth-protected-resource.
 //
@@ -13,14 +15,14 @@ import whoami from "./tools/whoami";
 const projectRef = import.meta.env.VITE_SUPABASE_PROJECT_ID ?? "project-ref-unset";
 
 export default defineMcp({
-  name: "claro-admin-mcp",
-  title: "Claro Admin MCP",
+  name: "claro-mcp",
+  title: "Claro MCP",
   version: "0.1.0",
   instructions:
-    "Authenticated Claro tools. Callers must sign in as a Claro user. Use `whoami` to verify the connection is authorized.",
+    "Authenticated Claro tools. Callers must sign in as a Claro user. Use `whoami` to verify the connection, `get_app_info` for app metadata, and `estimate_cleaning` for illustrative cleaning quotes.",
   auth: auth.oauth.issuer({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated",
   }),
-  tools: [whoami],
+  tools: [whoami, getAppInfo, estimateCleaning],
 });
