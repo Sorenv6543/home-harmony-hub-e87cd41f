@@ -1,24 +1,22 @@
-## Verification Result
+## Goal
+Confirm that `src/styles.css` contains no `@import` statements that Lightning CSS could reject, and optionally validate via a dev-server build.
 
-`src/styles.css` has been inspected for `@import` statements that Lightning CSS could reject.
+## Verification Plan
 
-### Current @import statements
+1. **Read `src/styles.css`**  
+   Inspect the file for all `@import` rules and confirm:
+   - Only package imports (`@import "tailwindcss" source(none);`, `@import "tw-animate-css";`) are present.
+   - No remote URL imports such as `https://fonts.googleapis.com/...` remain.
+   - No filesystem-relative imports point to missing files.
+   - All `@import` rules appear at the top of the file before other rules.
 
-```css
-@import "tailwindcss" source(none);
-@import "tw-animate-css";
-```
+2. **Check related files**  
+   Confirm Google Fonts are loaded via `<link>` tags in `src/routes/__root.tsx` (preconnect + stylesheet), so removing the CSS `@import` does not break fonts.
 
-Both imports reference installed npm packages. Lightning CSS resolves package imports from `node_modules`, so these are valid.
+3. **Optional build validation**  
+   Run `bun run build:dev` to confirm the dev server no longer returns 500 for `/src/styles.css` and no Lightning CSS `@import` error is emitted.
 
-### What was checked
-
-- No remote URL imports such as `https://fonts.googleapis.com/...` remain.
-- No filesystem-relative imports to missing files remain.
-- All `@import` rules are at the top of the file before other rules, satisfying Lightning CSS ordering requirements.
-
-### Proposed action
-
-No file changes are required. The stylesheet is compliant with Lightning CSS `@import` rules as-is.
-
-If you want, I can also run a dev-server build check to confirm the error no longer appears.
+## Expected Outcome
+- `src/styles.css` is compliant with Lightning CSS `@import` rules.
+- No file changes are required unless a new rejected `@import` is found.
+- Build completes without the previous `@import rules must precede all rules` or `ENOENT` errors.
