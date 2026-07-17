@@ -42,9 +42,7 @@ export function BookingsTable({ bookings }: { bookings: Booking[] }) {
             You have {bookings.length} bookings this period
           </p>
         </div>
-        <button className="text-xs font-medium text-primary hover:underline">
-          View all →
-        </button>
+        <button className="text-xs font-medium text-primary hover:underline">View all →</button>
       </div>
 
       <div className="overflow-x-auto">

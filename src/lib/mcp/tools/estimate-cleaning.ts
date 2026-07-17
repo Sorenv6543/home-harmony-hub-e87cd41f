@@ -11,10 +11,7 @@ export default defineTool({
   inputSchema: {
     bedrooms: z.number().int().min(0).max(20).describe("Number of bedrooms."),
     bathrooms: z.number().min(0).max(20).describe("Number of bathrooms."),
-    tier: z
-      .enum(["Standard", "Deep Clean"])
-      .default("Standard")
-      .describe("Cleaning pricing tier."),
+    tier: z.enum(["Standard", "Deep Clean"]).default("Standard").describe("Cleaning pricing tier."),
   },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: ({ bedrooms, bathrooms, tier }) => {

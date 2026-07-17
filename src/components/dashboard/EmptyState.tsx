@@ -48,7 +48,10 @@ export function EmptyState({
         <div
           aria-hidden
           className="pointer-events-none absolute -top-24 -right-20 h-60 w-60 rounded-full blur-3xl"
-          style={{ background: "radial-gradient(circle, var(--color-warning) 0%, transparent 70%)", opacity: 0.12 }}
+          style={{
+            background: "radial-gradient(circle, var(--color-warning) 0%, transparent 70%)",
+            opacity: 0.12,
+          }}
         />
 
         <div className="relative">
@@ -155,9 +158,7 @@ export function EmptyState({
             <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-warning-soft text-foreground/70">
               <Home className="h-5 w-5" />
             </span>
-            <p className="mt-4 text-sm font-semibold text-foreground">
-              No properties yet
-            </p>
+            <p className="mt-4 text-sm font-semibold text-foreground">No properties yet</p>
             <p className="mt-1 max-w-xs text-[13px] text-muted-foreground">
               Add your first place and we'll bring its calendar to life right here.
             </p>

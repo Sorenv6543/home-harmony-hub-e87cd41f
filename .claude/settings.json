@@ -1,0 +1,9 @@
+{
+  "enabledPlugins": {
+    "claude-code-setup@claude-plugins-official": true,
+    "supabase@claude-plugins-official": true,
+    "remember@claude-plugins-official": true,
+    "cloudflare@claude-plugins-official": true,
+    "hyperframes@claude-plugins-official": true
+  }
+}

@@ -44,8 +44,7 @@ export const Route = createFileRoute("/.lovable/oauth/consent")({
     }
   },
   loader: async ({ location }) => {
-    const authorizationId =
-      new URLSearchParams(location.search).get("authorization_id") ?? "";
+    const authorizationId = new URLSearchParams(location.search).get("authorization_id") ?? "";
     const { data, error } = await oauth().getAuthorizationDetails(authorizationId);
     if (error) throw new Error(error.message);
     const immediate = data?.redirect_url ?? data?.redirect_to;
@@ -95,12 +94,15 @@ function ConsentPage() {
           Connect {clientName} to your Claro account
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          {clientName} will be able to call Claro's authenticated MCP tools while you
-          are signed in. This does not bypass Claro's permissions or data policies.
+          {clientName} will be able to call Claro's authenticated MCP tools while you are signed in.
+          This does not bypass Claro's permissions or data policies.
         </p>
 
         {error && (
-          <p role="alert" className="mt-4 rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          <p
+            role="alert"
+            className="mt-4 rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"
+          >
             {error}
           </p>
         )}

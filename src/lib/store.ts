@@ -123,15 +123,74 @@ export const store = {
   seedSampleProperties() {
     if (state.properties.some((p) => p.id.startsWith("sample-"))) return;
     const samples: Property[] = [
-      { id: "sample-1", address: "1600 Pennsylvania Ave N", city: "Washington", state: "DC", zip: "20500", propertyType: "Single Family", color: "#7c3aed", bedrooms: 3, bathrooms: 2, cleaningDuration: 120, pricingTier: "Standard" },
-      { id: "sample-2", address: "123 Main Street", city: "Springfield", state: "IL", zip: "62701", propertyType: "Condo", color: "#16a34a", bedrooms: 2, bathrooms: 1, cleaningDuration: 90, pricingTier: "Standard" },
-      { id: "sample-3", address: "402 Maple St", city: "Madison", state: "WI", zip: "53703", propertyType: "Townhouse", color: "#a855f7", bedrooms: 2, bathrooms: 2, cleaningDuration: 90, pricingTier: "Standard" },
-      { id: "sample-4", address: "Lakeview Cottage", city: "Lake Geneva", state: "WI", zip: "53147", propertyType: "Cabin", color: "#ea580c", bedrooms: 4, bathrooms: 3, cleaningDuration: 180, pricingTier: "Deep Clean" },
-      { id: "sample-5", address: "88 Birch Ln", city: "Portland", state: "OR", zip: "97201", propertyType: "Single Family", color: "#dc2626", bedrooms: 2, bathrooms: 1, cleaningDuration: 90, pricingTier: "Standard" },
+      {
+        id: "sample-1",
+        address: "1600 Pennsylvania Ave N",
+        city: "Washington",
+        state: "DC",
+        zip: "20500",
+        propertyType: "Single Family",
+        color: "#7c3aed",
+        bedrooms: 3,
+        bathrooms: 2,
+        cleaningDuration: 120,
+        pricingTier: "Standard",
+      },
+      {
+        id: "sample-2",
+        address: "123 Main Street",
+        city: "Springfield",
+        state: "IL",
+        zip: "62701",
+        propertyType: "Condo",
+        color: "#16a34a",
+        bedrooms: 2,
+        bathrooms: 1,
+        cleaningDuration: 90,
+        pricingTier: "Standard",
+      },
+      {
+        id: "sample-3",
+        address: "402 Maple St",
+        city: "Madison",
+        state: "WI",
+        zip: "53703",
+        propertyType: "Townhouse",
+        color: "#a855f7",
+        bedrooms: 2,
+        bathrooms: 2,
+        cleaningDuration: 90,
+        pricingTier: "Standard",
+      },
+      {
+        id: "sample-4",
+        address: "Lakeview Cottage",
+        city: "Lake Geneva",
+        state: "WI",
+        zip: "53147",
+        propertyType: "Cabin",
+        color: "#ea580c",
+        bedrooms: 4,
+        bathrooms: 3,
+        cleaningDuration: 180,
+        pricingTier: "Deep Clean",
+      },
+      {
+        id: "sample-5",
+        address: "88 Birch Ln",
+        city: "Portland",
+        state: "OR",
+        zip: "97201",
+        propertyType: "Single Family",
+        color: "#dc2626",
+        bedrooms: 2,
+        bathrooms: 1,
+        cleaningDuration: 90,
+        pricingTier: "Standard",
+      },
     ];
     set({ properties: [...state.properties, ...samples] });
   },
-
 };
 
 export function useStore<T>(selector: (s: State) => T): T {
@@ -201,9 +260,7 @@ export function generateOccurrences(
   while (cursor <= stop) {
     const dow = dowOf(cursor);
     if (schedule.daysOfWeek.includes(dow)) {
-      const daysSinceStart = Math.floor(
-        (cursor.getTime() - startWeekAnchor.getTime()) / 86400000,
-      );
+      const daysSinceStart = Math.floor((cursor.getTime() - startWeekAnchor.getTime()) / 86400000);
       const weekIdx = Math.floor(daysSinceStart / 7);
       const intervalWeeks = interval / 7;
       if (weekIdx % intervalWeeks === 0) {

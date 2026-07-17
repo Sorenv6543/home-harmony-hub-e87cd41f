@@ -1,18 +1,28 @@
 import { useEffect, useMemo, useState } from "react";
 import { Home, Calendar as CalendarIcon, Clock, User, FileText } from "lucide-react";
 import { toast } from "sonner";
-import {
-  Sheet,
-  SheetContent,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useStore, store, type CustomBookingType } from "@/lib/store";
 
 const TYPES: { value: CustomBookingType; label: string; color: string; soft: string }[] = [
-  { value: "guest", label: "Guest stay", color: "var(--color-success)", soft: "var(--color-success-soft)" },
-  { value: "owner", label: "Owner block", color: "var(--color-info)", soft: "var(--color-info-soft)" },
-  { value: "maintenance", label: "Maintenance", color: "var(--color-warning)", soft: "var(--color-warning-soft)" },
+  {
+    value: "guest",
+    label: "Guest stay",
+    color: "var(--color-success)",
+    soft: "var(--color-success-soft)",
+  },
+  {
+    value: "owner",
+    label: "Owner block",
+    color: "var(--color-info)",
+    soft: "var(--color-info-soft)",
+  },
+  {
+    value: "maintenance",
+    label: "Maintenance",
+    color: "var(--color-warning)",
+    soft: "var(--color-warning-soft)",
+  },
 ];
 
 const TIMES = (() => {
@@ -281,13 +291,7 @@ export function NewBookingDrawer() {
   );
 }
 
-function Label({
-  icon: Icon,
-  children,
-}: {
-  icon?: typeof Home;
-  children: React.ReactNode;
-}) {
+function Label({ icon: Icon, children }: { icon?: typeof Home; children: React.ReactNode }) {
   return (
     <span className="flex items-center gap-1.5 text-[12px] font-semibold text-foreground/80">
       {Icon && <Icon className="h-3.5 w-3.5 text-muted-foreground" />}
