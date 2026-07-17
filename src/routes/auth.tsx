@@ -9,6 +9,9 @@ export const Route = createFileRoute("/auth")({
   validateSearch: (s: Record<string, unknown>) => ({
     next: typeof s.next === "string" ? s.next : undefined,
   }),
+  head: () => ({
+    meta: [{ title: "Sign In — Claro" }],
+  }),
   component: AuthPage,
 });
 
@@ -47,7 +50,9 @@ function AuthPage() {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: window.location.origin + "/auth?next=" + encodeURIComponent(returnTo) },
+          options: {
+            emailRedirectTo: window.location.origin + "/auth?next=" + encodeURIComponent(returnTo),
+          },
         });
         if (error) throw error;
         toast.success("Check your email to confirm your account.");
