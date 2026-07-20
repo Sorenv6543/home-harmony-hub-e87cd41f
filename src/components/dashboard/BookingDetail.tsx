@@ -15,7 +15,13 @@ import {
 import { store } from "@/lib/store";
 import { toast } from "sonner";
 
-export function BookingDetail({ booking, onClose }: { booking: Booking; onClose: () => void }) {
+export function BookingDetail({
+  booking,
+  onClose,
+}: {
+  booking: Booking;
+  onClose: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const [localCompany, setLocalCompany] = useState<string | undefined>(booking.cleaningCompany);
 
@@ -101,8 +107,9 @@ export function BookingDetail({ booking, onClose }: { booking: Booking; onClose:
         <div className="flex-1 overflow-y-auto">
           <div className="grid gap-5 px-6 py-5">
             <DetailRow icon={Calendar} label="Date & time">
-              {booking.occurrenceDateISO ? formatDateISO(booking.occurrenceDateISO) : "Today"} ·{" "}
-              {formatHour(booking.startHour)} – {formatHour(booking.endHour)}
+              {booking.occurrenceDateISO
+                ? formatDateISO(booking.occurrenceDateISO)
+                : "Today"} · {formatHour(booking.startHour)} – {formatHour(booking.endHour)}
             </DetailRow>
 
             {isRecurring && booking.cadence && (

@@ -27,37 +27,13 @@ type DemoBooking = {
 
 export const DEMO_BOOKINGS: DemoBooking[] = [
   { address: "1600 Pennsylvania Ave N", day: "today", startHour: 11, status: "check-out" },
-  {
-    address: "123 Main Street",
-    day: "today",
-    startHour: 15,
-    status: "check-in",
-    cleaningCompany: "Bright & Clean Co.",
-  },
-  {
-    address: "402 Maple St",
-    day: "today",
-    startHour: 8.5,
-    status: "check-in",
-    cleaningCompany: "Sparkle Pros",
-  },
+  { address: "123 Main Street", day: "today", startHour: 15, status: "check-in", cleaningCompany: "Bright & Clean Co." },
+  { address: "402 Maple St", day: "today", startHour: 8.5, status: "check-in", cleaningCompany: "Sparkle Pros" },
   { address: "123 Main Street", day: "tomorrow", startHour: 11, status: "turn" },
-  {
-    address: "Lakeview Cottage",
-    day: "tomorrow",
-    startHour: 16,
-    status: "check-in",
-    cleaningCompany: "Bright & Clean Co.",
-  },
+  { address: "Lakeview Cottage", day: "tomorrow", startHour: 16, status: "check-in", cleaningCompany: "Bright & Clean Co." },
   { address: "Lakeview Cottage", day: "wed", startHour: 10, status: "check-out" },
   { address: "88 Birch Ln", day: "today", startHour: 18, status: "check-out" },
-  {
-    address: "Lakeview Cottage",
-    day: "today",
-    startHour: 14,
-    status: "turn",
-    cleaningCompany: "Sparkle Pros",
-  },
+  { address: "Lakeview Cottage", day: "today", startHour: 14, status: "turn", cleaningCompany: "Sparkle Pros" },
 ];
 
 const DAY_OFFSET: Record<DemoBooking["day"], number> = { today: 0, tomorrow: 1, wed: 2, thu: 3 };
@@ -113,32 +89,14 @@ export function gatherEventsForProperty(
     if (cb.propertyId !== property.id) continue;
     const inDT = new Date(cb.checkInISO);
     const outDT = new Date(cb.checkOutISO);
-    const inOffset = Math.round(
-      (new Date(inDT.getFullYear(), inDT.getMonth(), inDT.getDate()).getTime() - today.getTime()) /
-        86400000,
-    );
-    const outOffset = Math.round(
-      (new Date(outDT.getFullYear(), outDT.getMonth(), outDT.getDate()).getTime() -
-        today.getTime()) /
-        86400000,
-    );
+    const inOffset = Math.round((new Date(inDT.getFullYear(), inDT.getMonth(), inDT.getDate()).getTime() - today.getTime()) / 86400000);
+    const outOffset = Math.round((new Date(outDT.getFullYear(), outDT.getMonth(), outDT.getDate()).getTime() - today.getTime()) / 86400000);
     if (cb.type === "guest") {
-      if (inOffset >= 0)
-        events.push({
-          dayOffset: inOffset,
-          hour: inDT.getHours() + inDT.getMinutes() / 60,
-          kind: "Check-in",
-        });
-      if (outOffset >= 0)
-        events.push({
-          dayOffset: outOffset,
-          hour: outDT.getHours() + outDT.getMinutes() / 60,
-          kind: "Check-out",
-        });
+      if (inOffset >= 0) events.push({ dayOffset: inOffset, hour: inDT.getHours() + inDT.getMinutes() / 60, kind: "Check-in" });
+      if (outOffset >= 0) events.push({ dayOffset: outOffset, hour: outDT.getHours() + outDT.getMinutes() / 60, kind: "Check-out" });
     } else {
       const kind: PropertyEvent["kind"] = cb.type === "owner" ? "Owner block" : "Maintenance";
-      if (inOffset >= 0)
-        events.push({ dayOffset: inOffset, hour: inDT.getHours() + inDT.getMinutes() / 60, kind });
+      if (inOffset >= 0) events.push({ dayOffset: inOffset, hour: inDT.getHours() + inDT.getMinutes() / 60, kind });
     }
   }
 

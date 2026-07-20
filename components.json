@@ -7,8 +7,7 @@
     "css": "src/styles.css",
     "baseColor": "slate",
     "cssVariables": true,
-    "prefix": "",
-    "config": "tailwind.config.js"
+    "prefix": ""
   },
   "iconLibrary": "lucide",
   "rtl": false,
@@ -19,6 +18,5 @@
     "lib": "@/lib",
     "hooks": "@/hooks"
   },
-  "registries": {},
-  "config": "components.json"
+  "registries": {}
 }

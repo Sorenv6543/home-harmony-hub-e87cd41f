@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import {
   Home,
   Smartphone,
@@ -53,7 +58,14 @@ const COLORS = [
   { name: "red", value: "#dc2626" },
 ];
 
-const PROPERTY_TYPES = ["Single Family", "Condo", "Apartment", "Townhouse", "Cabin", "Other"];
+const PROPERTY_TYPES = [
+  "Single Family",
+  "Condo",
+  "Apartment",
+  "Townhouse",
+  "Cabin",
+  "Other",
+];
 
 const FLOOR_TYPES = ["Hardwood", "Carpet", "Tile", "Mixed"];
 const PRICING_TIERS = ["Standard", "Premium", "Deep Clean"];
@@ -150,6 +162,7 @@ export function AddPropertyModal({
     onOpenChange(false);
     if (!isEdit) reset();
   };
+
 
   return (
     <Dialog
@@ -277,7 +290,9 @@ export function AddPropertyModal({
               </div>
 
               <div>
-                <label className="text-[13px] font-semibold text-foreground">Property Color</label>
+                <label className="text-[13px] font-semibold text-foreground">
+                  Property Color
+                </label>
                 <div className="mt-2 flex items-center gap-3">
                   {COLORS.map((c) => {
                     const selected = data.color === c.value;
@@ -302,7 +317,9 @@ export function AddPropertyModal({
 
               {/* Calendar Sync */}
               <div className="mt-2 rounded-2xl border border-border bg-warning-soft/40 p-5">
-                <p className="text-[13px] font-semibold text-foreground">Sync bookings from</p>
+                <p className="text-[13px] font-semibold text-foreground">
+                  Sync bookings from
+                </p>
                 <div className="mt-3 grid gap-3 sm:grid-cols-2">
                   <CalendarToggle
                     label="Airbnb"
@@ -375,22 +392,14 @@ export function AddPropertyModal({
 
           {step === 2 && (
             <div className="space-y-4">
-              <Field
-                icon={FileText}
-                label="Cleaning Instructions"
-                hint="Any special cleaning requirements or notes"
-              >
+              <Field icon={FileText} label="Cleaning Instructions" hint="Any special cleaning requirements or notes">
                 <textarea
                   className={`${inputCls} min-h-[90px] py-2.5`}
                   value={data.cleaningInstructions || ""}
                   onChange={(e) => set("cleaningInstructions", e.target.value)}
                 />
               </Field>
-              <Field
-                icon={Key}
-                label="Access Notes"
-                hint="Lockbox codes, key location, gate codes, etc."
-              >
+              <Field icon={Key} label="Access Notes" hint="Lockbox codes, key location, gate codes, etc.">
                 <textarea
                   className={`${inputCls} min-h-[90px] py-2.5`}
                   value={data.accessNotes || ""}
@@ -398,11 +407,7 @@ export function AddPropertyModal({
                 />
               </Field>
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field
-                  icon={Clock}
-                  label="Cleaning Duration (min)"
-                  hint="Time required for standard cleaning"
-                >
+                <Field icon={Clock} label="Cleaning Duration (min)" hint="Time required for standard cleaning">
                   <input
                     type="number"
                     min={0}
