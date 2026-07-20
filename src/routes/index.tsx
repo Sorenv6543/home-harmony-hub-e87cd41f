@@ -12,21 +12,15 @@ import { ConnectCalendarsModal } from "@/components/dashboard/ConnectCalendarsMo
 import { useStore, store, generateOccurrences } from "@/lib/store";
 import { getPropertySummary, STATUS_BADGE_STYLES, type PropertyStatus } from "@/lib/propertyStatus";
 
+
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Booking Dashboard — Claro" },
-      {
-        name: "description",
-        content:
-          "Manage today's cleaning bookings, your team, and upcoming schedule from one warm, intuitive dashboard.",
-      },
+      { name: "description", content: "Manage today's cleaning bookings, your team, and upcoming schedule from one warm, intuitive dashboard." },
       { property: "og:title", content: "Booking Dashboard — Claro" },
-      {
-        property: "og:description",
-        content:
-          "Manage today's cleaning bookings, your team, and upcoming schedule from one warm, intuitive dashboard.",
-      },
+      { property: "og:description", content: "Manage today's cleaning bookings, your team, and upcoming schedule from one warm, intuitive dashboard." },
     ],
   }),
   component: DashboardPage,
@@ -208,8 +202,9 @@ const bookings: Booking[] = [
   },
 ];
 
+
 function DashboardPage() {
-  const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
+  const [selectedId, setSelectedId] = useState<string | undefined>("2");
   const [showEmpty, setShowEmpty] = useState(true);
   const properties = useStore((s) => s.properties);
   const schedules = useStore((s) => s.schedules);
@@ -226,11 +221,7 @@ function DashboardPage() {
   const [showPropertiesHint, setShowPropertiesHint] = useState(false);
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (
-      !showEmpty &&
-      properties.length > 0 &&
-      !window.localStorage.getItem("claro.hint.properties.dismissed")
-    ) {
+    if (!showEmpty && properties.length > 0 && !window.localStorage.getItem("claro.hint.properties.dismissed")) {
       setShowPropertiesHint(true);
     }
   }, [showEmpty, properties.length]);
@@ -239,14 +230,6 @@ function DashboardPage() {
   useEffect(() => {
     if (customBookings.length > 0) setShowEmpty(false);
   }, [customBookings.length]);
-
-  // A returning user who already has properties shouldn't land on the
-  // first-time onboarding view on every page load. properties.length is
-  // 0 on the initial (server-matching) render even when localStorage has
-  // data, so this must re-run once the real snapshot loads on the client.
-  useEffect(() => {
-    if (properties.length > 0) setShowEmpty(false);
-  }, [properties.length]);
 
   // Generate recurring turns and merge into the active timeline.
   const recurringBookings = useMemo<Booking[]>(() => {
@@ -299,21 +282,14 @@ function DashboardPage() {
     return out;
   }, [schedules, properties, skipped, occurrenceCleaners]);
 
+
   // Convert user-created bookings (guest stay / owner block / maintenance) into timeline pills.
   const customTimelineBookings = useMemo<Booking[]>(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const dayFor = (d: Date): Booking["day"] | undefined => {
       const offset = Math.round((d.getTime() - today.getTime()) / 86400000);
-      return offset === 0
-        ? "today"
-        : offset === 1
-          ? "tomorrow"
-          : offset === 2
-            ? "wed"
-            : offset === 3
-              ? "thu"
-              : undefined;
+      return offset === 0 ? "today" : offset === 1 ? "tomorrow" : offset === 2 ? "wed" : offset === 3 ? "thu" : undefined;
     };
     const hourOf = (d: Date) => d.getHours() + d.getMinutes() / 60;
     const out: Booking[] = [];
@@ -367,9 +343,7 @@ function DashboardPage() {
         while (cursor.getTime() <= lastDay.getTime() && i < 8) {
           const day = dayFor(cursor);
           if (day) {
-            const sameAsIn =
-              cursor.getTime() ===
-              new Date(inDT.getFullYear(), inDT.getMonth(), inDT.getDate()).getTime();
+            const sameAsIn = cursor.getTime() === new Date(inDT.getFullYear(), inDT.getMonth(), inDT.getDate()).getTime();
             const sameAsOut = cursor.getTime() === lastDay.getTime();
             const sh = sameAsIn ? Math.max(8, Math.min(20, hourOf(inDT))) : 8;
             const eh = sameAsOut ? Math.max(8, Math.min(20, hourOf(outDT))) : 20;
@@ -396,11 +370,13 @@ function DashboardPage() {
     return out;
   }, [customBookings, properties]);
 
-  const baseBookings = useMemo(() => (showEmpty ? [] : bookings), [showEmpty]);
+  const baseBookings = showEmpty ? [] : bookings;
   const activeBookings = useMemo(
     () => [...baseBookings, ...recurringBookings, ...customTimelineBookings],
     [baseBookings, recurringBookings, customTimelineBookings],
   );
+
+
 
   const selected = activeBookings.find((b) => b.id === selectedId);
 
@@ -413,7 +389,7 @@ function DashboardPage() {
 
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
-        <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-4 border-b border-border bg-surface/85 backdrop-blur pl-16 pr-4 md:pr-8 lg:pl-8">
+        <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-4 border-b border-border bg-surface/85 backdrop-blur px-4 md:px-8">
           <div className="min-w-0">
             <h1 className="text-base md:text-lg font-semibold tracking-tight text-foreground truncate">
               Overview
@@ -491,10 +467,7 @@ function DashboardPage() {
                 <div
                   aria-hidden
                   className="pointer-events-none absolute -top-24 -right-16 h-64 w-64 rounded-full blur-3xl"
-                  style={{
-                    background: "radial-gradient(circle, var(--color-primary) 0%, transparent 70%)",
-                    opacity: 0.1,
-                  }}
+                  style={{ background: "radial-gradient(circle, var(--color-primary) 0%, transparent 70%)", opacity: 0.1 }}
                 />
                 <div className="relative flex flex-wrap items-end justify-between gap-6">
                   <div className="min-w-0">
@@ -509,9 +482,7 @@ function DashboardPage() {
                         {baseBookings.filter((b) => b.day === "today").length} bookings
                       </span>{" "}
                       scheduled today ·{" "}
-                      <span
-                        className={`font-semibold ${attentionCount > 0 ? "text-danger" : "text-foreground"}`}
-                      >
+                      <span className={`font-semibold ${attentionCount > 0 ? "text-danger" : "text-foreground"}`}>
                         {attentionCount} {attentionCount === 1 ? "needs" : "need"} attention
                       </span>
                     </p>
@@ -527,79 +498,68 @@ function DashboardPage() {
                 </div>
               </section>
 
-              {properties.length > 0 &&
-                (() => {
-                  const isSampleMode =
-                    properties.length > 0 && properties.every((p) => p.id.startsWith("sample-"));
-                  const includeDemo = !showEmpty; // when bookings are visible
-                  const summaries = properties.map((p) => ({
-                    property: p,
-                    summary: getPropertySummary(p, schedules, customBookings, includeDemo),
-                  }));
-                  // Prioritize: today (0) first, then tomorrow (1), then by dayOffset asc, then name.
-                  summaries.sort((a, b) => {
-                    const ao = a.summary.nextEvent?.dayOffset ?? 99;
-                    const bo = b.summary.nextEvent?.dayOffset ?? 99;
-                    return ao - bo;
-                  });
-                  const cap = isSampleMode ? 4 : 6;
-                  const shown = summaries.slice(0, cap);
-                  const hidden = summaries.length - shown.length;
-                  return (
-                    <section id="your-properties" className="space-y-4 scroll-mt-20">
-                      {showPropertiesHint && (
-                        <div className="flex items-start gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-4">
-                          <span className="mt-0.5 text-lg" aria-hidden>
-                            👇
-                          </span>
-                          <div className="flex-1 text-sm text-foreground">
-                            <p className="font-semibold">Tip: tap a property below</p>
-                            <p className="text-muted-foreground">
-                              Open any property to see its turns, calendar sync, and access notes.
-                            </p>
-                          </div>
-                          <button
-                            onClick={() => {
-                              setShowPropertiesHint(false);
-                              if (typeof window !== "undefined") {
-                                window.localStorage.setItem("claro.hint.properties.dismissed", "1");
-                              }
-                            }}
-                            className="rounded-md px-2 py-1 text-xs font-semibold text-muted-foreground hover:bg-surface-muted"
-                          >
-                            Got it
-                          </button>
-                        </div>
-                      )}
-                      <div className="flex flex-wrap items-end justify-between gap-3">
-                        <div>
-                          <h3 className="text-lg md:text-xl font-semibold tracking-tight text-foreground">
-                            Your properties
-                          </h3>
-                          <p className="text-sm text-muted-foreground">
-                            Tap a property to view details, sync calendars, and manage settings.
+              {properties.length > 0 && (() => {
+                const isSampleMode = properties.length > 0 && properties.every((p) => p.id.startsWith("sample-"));
+                const includeDemo = !showEmpty; // when bookings are visible
+                const summaries = properties.map((p) => ({
+                  property: p,
+                  summary: getPropertySummary(p, schedules, customBookings, includeDemo),
+                }));
+                // Prioritize: today (0) first, then tomorrow (1), then by dayOffset asc, then name.
+                summaries.sort((a, b) => {
+                  const ao = a.summary.nextEvent?.dayOffset ?? 99;
+                  const bo = b.summary.nextEvent?.dayOffset ?? 99;
+                  return ao - bo;
+                });
+                const cap = isSampleMode ? 4 : 6;
+                const shown = summaries.slice(0, cap);
+                const hidden = summaries.length - shown.length;
+                return (
+                  <section id="your-properties" className="space-y-4 scroll-mt-20">
+                    {showPropertiesHint && (
+                      <div className="flex items-start gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-4">
+                        <span className="mt-0.5 text-lg" aria-hidden>👇</span>
+                        <div className="flex-1 text-sm text-foreground">
+                          <p className="font-semibold">Tip: tap a property below</p>
+                          <p className="text-muted-foreground">
+                            Open any property to see its turns, calendar sync, and access notes.
                           </p>
                         </div>
-                        <Link
-                          to="/properties"
-                          className="text-sm font-semibold text-primary hover:underline"
+                        <button
+                          onClick={() => {
+                            setShowPropertiesHint(false);
+                            if (typeof window !== "undefined") {
+                              window.localStorage.setItem("claro.hint.properties.dismissed", "1");
+                            }
+                          }}
+                          className="rounded-md px-2 py-1 text-xs font-semibold text-muted-foreground hover:bg-surface-muted"
                         >
-                          View all{hidden > 0 ? ` (${hidden} more)` : ""} →
-                        </Link>
+                          Got it
+                        </button>
                       </div>
-                      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 grid-rows-[auto] max-h-[28rem] overflow-hidden">
-                        {shown.map(({ property, summary }) => (
-                          <PropertyCard
-                            key={property.id}
-                            property={property}
-                            status={summary.status}
-                            nextEventLabel={summary.nextEventLabel}
-                          />
-                        ))}
+                    )}
+                    <div className="flex flex-wrap items-end justify-between gap-3">
+                      <div>
+                        <h3 className="text-lg md:text-xl font-semibold tracking-tight text-foreground">
+                          Your properties
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          Tap a property to view details, sync calendars, and manage settings.
+                        </p>
                       </div>
-                    </section>
-                  );
-                })()}
+                      <Link to="/properties" className="text-sm font-semibold text-primary hover:underline">
+                        View all{hidden > 0 ? ` (${hidden} more)` : ""} →
+                      </Link>
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 grid-rows-[auto] max-h-[28rem] overflow-hidden">
+                      {shown.map(({ property, summary }) => (
+                        <PropertyCard key={property.id} property={property} status={summary.status} nextEventLabel={summary.nextEventLabel} />
+                      ))}
+                    </div>
+                  </section>
+                );
+              })()}
+
 
               {/* Section header for timeline */}
               <section id="bookings-timeline" className="space-y-4 scroll-mt-20">
@@ -615,17 +575,14 @@ function DashboardPage() {
                   <Legend />
                 </div>
 
-                <Timeline
-                  bookings={activeBookings}
-                  onSelect={setSelectedId}
-                  selectedId={selectedId}
-                />
+                <Timeline bookings={activeBookings} onSelect={setSelectedId} selectedId={selectedId} />
               </section>
 
               {/* Upcoming list */}
               <BookingsTable bookings={activeBookings} />
             </>
           )}
+
 
           {/* Detail (slide-in panel) */}
           {selected && !showEmpty && (
@@ -672,20 +629,13 @@ function PropertyCard({
       params={{ id: p.id }}
       className="group flex items-start gap-3 rounded-2xl border border-border bg-surface p-4 shadow-card transition-colors hover:border-primary/30"
     >
-      <span
-        className="mt-0.5 h-10 w-10 shrink-0 rounded-xl"
-        style={{ backgroundColor: p.color }}
-        aria-hidden
-      />
+      <span className="mt-0.5 h-10 w-10 shrink-0 rounded-xl" style={{ backgroundColor: p.color }} aria-hidden />
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">
           <p className="truncate text-sm font-semibold text-foreground">
-            {p.address}
-            {p.unit ? `, ${p.unit}` : ""}
+            {p.address}{p.unit ? `, ${p.unit}` : ""}
           </p>
-          <span
-            className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${STATUS_BADGE_STYLES[status]}`}
-          >
+          <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${STATUS_BADGE_STYLES[status]}`}>
             {status}
           </span>
         </div>
@@ -699,3 +649,5 @@ function PropertyCard({
     </Link>
   );
 }
+
+

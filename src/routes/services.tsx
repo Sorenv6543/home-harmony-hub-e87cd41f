@@ -26,7 +26,8 @@ export const Route = createFileRoute("/services")({
       { title: "Service Settings — Claro" },
       {
         name: "description",
-        content: "Configure cleaning cadence and recurring cleanings for each of your properties.",
+        content:
+          "Configure cleaning cadence and recurring cleanings for each of your properties.",
       },
     ],
   }),
@@ -72,7 +73,7 @@ function ServiceSettingsPage() {
     <div className="flex min-h-screen w-full bg-background">
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-4 border-b border-border bg-surface/85 backdrop-blur pl-16 pr-4 md:pr-8 lg:pl-8">
+        <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-4 border-b border-border bg-surface/85 backdrop-blur px-4 md:px-8">
           <div className="min-w-0 flex items-center gap-3">
             <Link
               to="/"
@@ -172,7 +173,7 @@ function PropertyPicker({
   );
 }
 
-const ACCENT = "var(--color-primary)";
+const ACCENT = "#6366f1";
 
 function ScheduleCard({
   propertyId,
@@ -239,7 +240,7 @@ function ScheduleCard({
 
   return (
     <section className="rounded-3xl border border-border bg-surface shadow-card">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-5">
+      <header className="flex items-center justify-between gap-4 border-b border-border px-6 py-5">
         <div className="flex items-center gap-3">
           <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-warning-soft text-foreground/70">
             <CalendarSync className="h-5 w-5" />
@@ -248,7 +249,9 @@ function ScheduleCard({
             <h2 className="text-lg font-semibold tracking-tight text-foreground">
               Recurring Cleanings
             </h2>
-            <p className="text-xs text-muted-foreground">Auto-schedule turns for this property</p>
+            <p className="text-xs text-muted-foreground">
+              Auto-schedule turns for this property
+            </p>
           </div>
         </div>
 
@@ -287,7 +290,11 @@ function ScheduleCard({
           <Group label="Day of week">
             <div className="flex flex-wrap gap-2">
               {DOW_LABELS.map((d, i) => (
-                <Pill key={d} active={days.includes(i as Dow)} onClick={() => toggleDay(i as Dow)}>
+                <Pill
+                  key={d}
+                  active={days.includes(i as Dow)}
+                  onClick={() => toggleDay(i as Dow)}
+                >
                   {d}
                 </Pill>
               ))}

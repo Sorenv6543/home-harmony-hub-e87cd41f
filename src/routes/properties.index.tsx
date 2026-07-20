@@ -1,17 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  Plus,
-  Home as HomeIcon,
-  Search,
-  LayoutGrid,
-  List as ListIcon,
-  ChevronRight,
-} from "lucide-react";
+import { Plus, Home as HomeIcon, Search, LayoutGrid, List as ListIcon, ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { AddPropertyModal } from "@/components/dashboard/AddPropertyModal";
 import { useStore, store } from "@/lib/store";
-import { getPropertySummary, STATUS_BADGE_STYLES, type PropertyStatus } from "@/lib/propertyStatus";
+import {
+  getPropertySummary,
+  STATUS_BADGE_STYLES,
+  type PropertyStatus,
+} from "@/lib/propertyStatus";
 import type { Property } from "@/components/dashboard/AddPropertyModal";
 
 export const Route = createFileRoute("/properties/")({
@@ -53,8 +50,7 @@ function PropertiesPage() {
     let rows = enriched;
     if (q) {
       rows = rows.filter((r) => {
-        const hay =
-          `${r.property.address} ${r.property.city} ${r.property.state} ${r.property.unit ?? ""}`.toLowerCase();
+        const hay = `${r.property.address} ${r.property.city} ${r.property.state} ${r.property.unit ?? ""}`.toLowerCase();
         return hay.includes(q);
       });
     }
@@ -64,7 +60,8 @@ function PropertiesPage() {
       sorted.sort((a, b) => a.property.address.localeCompare(b.property.address));
     } else if (sort === "Next Event") {
       sorted.sort(
-        (a, b) => (a.summary.nextEvent?.dayOffset ?? 99) - (b.summary.nextEvent?.dayOffset ?? 99),
+        (a, b) =>
+          (a.summary.nextEvent?.dayOffset ?? 99) - (b.summary.nextEvent?.dayOffset ?? 99),
       );
     } else {
       // Recently Added: keep insertion order, but reverse so newest first.
@@ -77,7 +74,7 @@ function PropertiesPage() {
     <div className="flex min-h-screen bg-background">
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-3 border-b border-border bg-surface/90 pl-16 pr-4 md:pr-8 lg:pl-8 backdrop-blur">
+        <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-3 border-b border-border bg-surface/90 px-4 md:px-8 backdrop-blur">
           <div className="min-w-0">
             <h1 className="text-lg md:text-xl font-semibold tracking-tight text-foreground truncate">
               Your properties
@@ -86,7 +83,7 @@ function PropertiesPage() {
               {properties.length} {properties.length === 1 ? "property" : "properties"}
             </p>
           </div>
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex items-center gap-2">
             <div className="flex rounded-lg border border-border bg-surface-muted p-0.5 text-[11px] font-semibold">
               <button
                 onClick={() => setView("grid")}
@@ -96,8 +93,7 @@ function PropertiesPage() {
                   view === "grid" ? "bg-surface text-foreground shadow-sm" : "text-muted-foreground"
                 }`}
               >
-                <LayoutGrid className="h-3.5 w-3.5" />{" "}
-                <span className="hidden sm:inline">Grid</span>
+                <LayoutGrid className="h-3.5 w-3.5" /> Grid
               </button>
               <button
                 onClick={() => setView("list")}
@@ -107,17 +103,15 @@ function PropertiesPage() {
                   view === "list" ? "bg-surface text-foreground shadow-sm" : "text-muted-foreground"
                 }`}
               >
-                <ListIcon className="h-3.5 w-3.5" /> <span className="hidden sm:inline">List</span>
+                <ListIcon className="h-3.5 w-3.5" /> List
               </button>
             </div>
             <button
               onClick={() => setModalOpen(true)}
-              title="Add property"
-              className="inline-flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-sm font-semibold text-primary-foreground shadow-card transition-transform hover:-translate-y-0.5"
+              className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-primary-foreground shadow-card transition-transform hover:-translate-y-0.5"
               style={{ backgroundImage: "var(--gradient-primary)" }}
             >
-              <Plus className="h-4 w-4" /> <span className="hidden sm:inline">Add property</span>
-              <span className="sm:hidden">Add</span>
+              <Plus className="h-4 w-4" /> Add property
             </button>
           </div>
         </header>
@@ -245,9 +239,7 @@ function PropertiesPage() {
 
 function StatusPill({ status }: { status: PropertyStatus }) {
   return (
-    <span
-      className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold ${STATUS_BADGE_STYLES[status]}`}
-    >
+    <span className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold ${STATUS_BADGE_STYLES[status]}`}>
       {status}
     </span>
   );
@@ -270,16 +262,11 @@ function GridCard({
       params={{ id: p.id }}
       className="group flex items-start gap-4 rounded-2xl border border-border bg-surface p-5 shadow-card transition-colors hover:border-primary/30"
     >
-      <span
-        className="mt-0.5 h-12 w-12 shrink-0 rounded-xl"
-        style={{ backgroundColor: p.color }}
-        aria-hidden
-      />
+      <span className="mt-0.5 h-12 w-12 shrink-0 rounded-xl" style={{ backgroundColor: p.color }} aria-hidden />
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">
           <p className="truncate text-sm font-semibold text-foreground">
-            {p.address}
-            {p.unit ? `, ${p.unit}` : ""}
+            {p.address}{p.unit ? `, ${p.unit}` : ""}
           </p>
           <StatusPill status={status} />
         </div>
@@ -321,15 +308,10 @@ function ListRow({
         className="grid grid-cols-1 gap-2 px-4 py-3 transition-colors hover:bg-surface-muted/50 md:grid-cols-[1.6fr_0.8fr_0.7fr_1fr_1.2fr_2rem] md:items-center md:gap-3"
       >
         <div className="flex items-center gap-3 min-w-0">
-          <span
-            className="h-8 w-8 shrink-0 rounded-lg"
-            style={{ backgroundColor: p.color }}
-            aria-hidden
-          />
+          <span className="h-8 w-8 shrink-0 rounded-lg" style={{ backgroundColor: p.color }} aria-hidden />
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-foreground">
-              {p.address}
-              {p.unit ? `, ${p.unit}` : ""}
+              {p.address}{p.unit ? `, ${p.unit}` : ""}
             </p>
             <p className="truncate text-[11px] text-muted-foreground">
               {p.city}, {p.state}
@@ -337,17 +319,15 @@ function ListRow({
           </div>
         </div>
         <div className="truncate text-xs text-foreground/80">{p.propertyType}</div>
-        <div className="text-xs text-foreground/80">
-          {p.bedrooms} bd · {p.bathrooms} ba
-        </div>
-        <div>
-          <StatusPill status={status} />
-        </div>
+        <div className="text-xs text-foreground/80">{p.bedrooms} bd · {p.bathrooms} ba</div>
+        <div><StatusPill status={status} /></div>
         <div className="min-w-0">
           <p className="truncate text-xs text-foreground/80">
             {nextEventLabel ?? "No upcoming events"}
           </p>
-          {cleaner && <p className="truncate text-[11px] text-muted-foreground">{cleaner}</p>}
+          {cleaner && (
+            <p className="truncate text-[11px] text-muted-foreground">{cleaner}</p>
+          )}
         </div>
         <div className="hidden justify-end text-muted-foreground md:flex">
           <ChevronRight className="h-4 w-4" />

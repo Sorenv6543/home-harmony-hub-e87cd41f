@@ -93,9 +93,7 @@ export function Timeline({
           </div>
           <div>
             <h3 className="text-base font-semibold text-foreground">Schedule</h3>
-            <p className="text-xs text-muted-foreground">
-              Next few days · tap a booking for details
-            </p>
+            <p className="text-xs text-muted-foreground">Next few days · tap a booking for details</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -115,6 +113,7 @@ export function Timeline({
             ))}
           </div>
         </div>
+
       </div>
 
       <div className="px-5 pb-5 pt-4">
@@ -175,7 +174,7 @@ export function Timeline({
                         )}
                         <button
                           onClick={() => onSelect(b.id)}
-                          className={`absolute top-1.5 bottom-1.5 flex items-center gap-2 overflow-hidden rounded-full border px-3.5 text-left transition-all ${s.bar} ${
+                          className={`absolute top-1.5 bottom-1.5 flex items-center gap-2 rounded-full border px-3.5 text-left transition-all ${s.bar} ${
                             selected
                               ? "ring-2 ring-primary ring-offset-2 ring-offset-surface"
                               : "hover:brightness-95"
@@ -183,11 +182,10 @@ export function Timeline({
                           style={{
                             left: `${pct(b.startHour)}%`,
                             minWidth: `${pct(b.endHour) - pct(b.startHour)}%`,
-                            maxWidth: `calc(100% - ${pct(b.startHour)}%)`,
                           }}
                         >
                           <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${s.dot}`} />
-                          <span className={`min-w-0 truncate text-[13px] font-semibold ${s.text}`}>
+                          <span className={`text-[13px] font-semibold whitespace-nowrap ${s.text}`}>
                             {b.label ?? `${formatHour(b.startHour)} · ${s.label}`}
                           </span>
                           {b.recurring && (
@@ -199,6 +197,8 @@ export function Timeline({
                             </span>
                           )}
                         </button>
+
+
                       </div>
                     </div>
                   );
@@ -220,6 +220,7 @@ export function Legend() {
           <span className={`h-2.5 w-2.5 rounded-full ${statusStyles[k].dot}`} />
           {statusStyles[k].label}
         </div>
+
       ))}
     </div>
   );
@@ -227,16 +228,7 @@ export function Legend() {
 
 function CalendarIcon() {
   return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="4" width="18" height="18" rx="2" />
       <path d="M16 2v4M8 2v4M3 10h18" />
     </svg>

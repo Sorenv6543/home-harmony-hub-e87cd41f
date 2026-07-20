@@ -1,10 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowLeft, Pencil, CalendarDays, Clock, Check } from "lucide-react";
+import {
+  ArrowLeft,
+  Pencil,
+  CalendarDays,
+  Clock,
+  Check,
+} from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { AddPropertyModal } from "@/components/dashboard/AddPropertyModal";
 import { CalendarSyncPanel } from "@/components/dashboard/CalendarSyncPanel";
 import { useStore, store, generateOccurrences } from "@/lib/store";
+
 
 export const Route = createFileRoute("/properties/$id")({
   head: ({ params }) => ({
@@ -38,25 +45,6 @@ function PropertyDetailPage() {
   const [companyDraft, setCompanyDraft] = useState("");
   const [accessDraft, setAccessDraft] = useState<string | null>(null);
 
-  const upcomingTurns = useMemo(() => {
-    if (!property) return [];
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const schedule = schedules.find((s) => s.propertyId === property.id);
-    if (!schedule) return [];
-    return generateOccurrences(schedule, 8, today).slice(0, 10);
-  }, [schedules, property]);
-
-  const pastBookings = useMemo(() => {
-    if (!property) return [];
-    const now = Date.now();
-    return customBookings
-      .filter((b) => b.propertyId === property.id && b.type === "guest")
-      .filter((b) => new Date(b.checkOutISO).getTime() < now)
-      .sort((a, b) => new Date(b.checkOutISO).getTime() - new Date(a.checkOutISO).getTime())
-      .slice(0, 5);
-  }, [customBookings, property]);
-
   if (!property) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
@@ -69,6 +57,23 @@ function PropertyDetailPage() {
       </div>
     );
   }
+
+  const upcomingTurns = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const schedule = schedules.find((s) => s.propertyId === property.id);
+    if (!schedule) return [];
+    return generateOccurrences(schedule, 8, today).slice(0, 10);
+  }, [schedules, property.id]);
+
+  const pastBookings = useMemo(() => {
+    const now = Date.now();
+    return customBookings
+      .filter((b) => b.propertyId === property.id && b.type === "guest")
+      .filter((b) => new Date(b.checkOutISO).getTime() < now)
+      .sort((a, b) => new Date(b.checkOutISO).getTime() - new Date(a.checkOutISO).getTime())
+      .slice(0, 5);
+  }, [customBookings, property.id]);
 
   const startNameEdit = () => {
     setNameDraft(property.address);
@@ -94,7 +99,8 @@ function PropertyDetailPage() {
     }
     setEditingCompany(false);
   };
-  const currentCompany = schedules.find((s) => s.propertyId === property.id)?.cleaningCompany ?? "";
+  const currentCompany =
+    schedules.find((s) => s.propertyId === property.id)?.cleaningCompany ?? "";
 
   const accessNotes = accessDraft ?? property.accessNotes ?? "";
   const accessDirty = accessDraft !== null && accessDraft !== (property.accessNotes ?? "");
@@ -110,7 +116,7 @@ function PropertyDetailPage() {
     <div className="flex min-h-screen w-full bg-background">
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b border-border bg-surface/85 backdrop-blur pl-16 pr-4 md:pr-8 lg:pl-8">
+        <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b border-border bg-surface/85 backdrop-blur px-4 md:px-8">
           <Link
             to="/"
             className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-sm font-semibold text-foreground/70 hover:bg-surface-muted hover:text-foreground"
@@ -124,10 +130,10 @@ function PropertyDetailPage() {
           </div>
         </header>
 
-        <main className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto px-4 md:px-8 py-6 md:py-8">
-          <div className="grid min-w-0 gap-6 lg:grid-cols-[1.5fr_1fr]">
+        <main className="flex-1 overflow-y-auto px-4 md:px-8 py-6 md:py-8">
+          <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
             {/* LEFT */}
-            <div className="min-w-0 space-y-6">
+            <div className="space-y-6">
               {/* Hero header */}
               <section className="relative rounded-3xl border border-border bg-surface p-6 md:p-7 shadow-card">
                 <button
@@ -202,7 +208,10 @@ function PropertyDetailPage() {
                 ) : (
                   <ul className="mt-4 divide-y divide-border/60">
                     {upcomingTurns.map((occ) => (
-                      <li key={occ.key} className="flex flex-wrap items-center gap-3 py-3 text-sm">
+                      <li
+                        key={occ.key}
+                        className="flex flex-wrap items-center gap-3 py-3 text-sm"
+                      >
                         <div className="min-w-[170px] font-medium text-foreground">
                           {occ.date.toLocaleDateString(undefined, {
                             weekday: "short",
@@ -243,7 +252,10 @@ function PropertyDetailPage() {
                 ) : (
                   <ul className="mt-4 divide-y divide-border/60">
                     {pastBookings.map((b) => (
-                      <li key={b.id} className="flex flex-wrap items-center gap-3 py-3 text-sm">
+                      <li
+                        key={b.id}
+                        className="flex flex-wrap items-center gap-3 py-3 text-sm"
+                      >
                         <div className="min-w-[140px] font-medium text-foreground">
                           {b.guestName || "Guest"}
                         </div>
@@ -262,7 +274,7 @@ function PropertyDetailPage() {
             </div>
 
             {/* RIGHT */}
-            <div className="min-w-0 space-y-6">
+            <div className="space-y-6">
               {/* Cleaning Company */}
               <section className="rounded-3xl border border-border bg-surface p-6 shadow-card">
                 <div className="flex items-center justify-between">
@@ -345,3 +357,4 @@ function PropertyDetailPage() {
     </div>
   );
 }
+
